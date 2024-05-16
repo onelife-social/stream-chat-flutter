@@ -1122,7 +1122,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             showResendMessage: shouldShowResendAction,
             showCopyMessage: shouldShowCopyAction,
             showEditMessage: shouldShowEditAction,
-            showReactionPicker: widget.showReactionPicker,
+            showReactionPicker: true,
             showReplyMessage: shouldShowReplyAction,
             showThreadReplyMessage: shouldShowThreadReplyAction,
             showFlagButton: widget.showFlagButton,
