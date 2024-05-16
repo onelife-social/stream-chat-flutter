@@ -1058,7 +1058,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       builder: (context) => StreamChannel(
         channel: channel,
         child: StreamMessageReactionsModal(
-          showReactionPicker: widget.showReactionPicker,
+          showReactionPicker: true,
           messageWidget: widget.copyWith(
             key: const Key('MessageWidget'),
             message: widget.message.copyWith(
