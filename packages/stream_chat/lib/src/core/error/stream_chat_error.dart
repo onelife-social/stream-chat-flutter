@@ -93,15 +93,14 @@ class StreamChatNetworkError extends StreamChatError {
     final response = exception.response;
     ErrorResponse? errorResponse;
     final data = response?.data;
-    if (data != null) {
+    if (data is Map<String, Object?>) {
       errorResponse = ErrorResponse.fromJson(data);
+    } else if (data is String) {
+      errorResponse = ErrorResponse.fromJson(jsonDecode(data));
     }
     return StreamChatNetworkError.raw(
       code: errorResponse?.code ?? -1,
-      message: errorResponse?.message ??
-          response?.statusMessage ??
-          exception.message ??
-          '',
+      message: errorResponse?.message ?? response?.statusMessage ?? exception.message ?? '',
       statusCode: errorResponse?.statusCode ?? response?.statusCode,
       data: errorResponse,
       isRequestCancelledError: exception.type == DioExceptionType.cancel,
