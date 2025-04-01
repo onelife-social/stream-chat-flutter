@@ -1,7 +1,7 @@
 name: stream_chat_flutter
 homepage: https://github.com/GetStream/stream-chat-flutter
 description: Stream Chat official Flutter SDK. Build your own chat experience using Dart and Flutter.
-version: 8.3.0
+version: 8.3.0+1
 repository: https://github.com/GetStream/stream-chat-flutter
 issue_tracker: https://github.com/GetStream/stream-chat-flutter/issues
 
@@ -18,7 +18,10 @@ dependencies:
   diacritic: ^0.1.5
   dio: ^5.4.3+1
   ezanimation: ^0.6.0
-  file_picker: ^8.0.5
+  file_picker:
+    git:
+      url: https://github.com/onelife-social/flutter_file_picker.git
+      ref: fix/photo-selector
   file_selector: ^1.0.3
   flutter:
     sdk: flutter
