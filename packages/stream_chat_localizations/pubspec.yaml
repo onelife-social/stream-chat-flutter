@@ -14,7 +14,11 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  stream_chat_flutter: ^8.2.0
+  stream_chat_flutter:
+    git:
+      url: https://github.com/onelife-social/stream-chat-flutter
+      path: packages/stream_chat_flutter
+      ref: fix/file-picker-version
 
 dev_dependencies:
   flutter_test:
