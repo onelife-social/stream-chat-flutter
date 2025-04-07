@@ -26,7 +26,11 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  stream_chat_flutter: ^9.7.0
+  stream_chat_flutter: 
+    git:
+      url: https://github.com/onelife-social/stream-chat-flutter
+      path: packages/stream_chat_flutter
+      ref: fix/socket-error
 
 dev_dependencies:
   flutter_test:
