@@ -1,10 +1,15 @@
 import 'package:stream_chat/src/core/api/requests.dart';
+import 'package:stream_chat/src/core/api/sort_order.dart';
 import 'package:stream_chat/src/core/models/channel_model.dart';
 import 'package:stream_chat/src/core/models/channel_state.dart';
+import 'package:stream_chat/src/core/models/draft.dart';
+import 'package:stream_chat/src/core/models/draft_message.dart';
 import 'package:stream_chat/src/core/models/event.dart';
 import 'package:stream_chat/src/core/models/filter.dart';
 import 'package:stream_chat/src/core/models/member.dart';
 import 'package:stream_chat/src/core/models/message.dart';
+import 'package:stream_chat/src/core/models/poll.dart';
+import 'package:stream_chat/src/core/models/poll_vote.dart';
 import 'package:stream_chat/src/core/models/reaction.dart';
 import 'package:stream_chat/src/core/models/read.dart';
 import 'package:stream_chat/src/core/models/user.dart';
@@ -16,7 +21,7 @@ class TestPersistenceClient extends ChatPersistenceClient {
   bool get isConnected => throw UnimplementedError();
 
   @override
-  String? get userId => throw UnimplementedError();
+  String? get userId => 'test-user-id';
 
   @override
   Future<void> connect(String userId) => throw UnimplementedError();
@@ -50,6 +55,13 @@ class TestPersistenceClient extends ChatPersistenceClient {
       Future.value();
 
   @override
+  Future<void> deletePollVotesByPollIds(List<String> pollIds) => Future.value();
+
+  @override
+  Future<void> deleteDraftMessageByCid(String cid, {String? parentId}) =>
+      Future.value();
+
+  @override
   Future<void> disconnect({bool flush = false}) => throw UnimplementedError();
 
   @override
@@ -62,7 +74,7 @@ class TestPersistenceClient extends ChatPersistenceClient {
   @override
   Future<List<ChannelState>> getChannelStates(
           {Filter? filter,
-          List<SortOption<ChannelState>>? channelStateSort,
+          SortOrder<ChannelState>? channelStateSort,
           PaginationParams? paginationParams}) =>
       throw UnimplementedError();
 
@@ -93,6 +105,18 @@ class TestPersistenceClient extends ChatPersistenceClient {
   Future<List<Read>> getReadsByCid(String cid) async => [];
 
   @override
+  Future<Draft?> getDraftMessageByCid(
+    String cid, {
+    String? parentId,
+  }) async =>
+      Draft(
+        channelCid: cid,
+        parentId: parentId,
+        createdAt: DateTime.now(),
+        message: DraftMessage(id: 'message-id', text: 'message-text'),
+      );
+
+  @override
   Future<List<Message>> getReplies(String parentId,
           {PaginationParams? options}) =>
       throw UnimplementedError();
@@ -120,6 +144,9 @@ class TestPersistenceClient extends ChatPersistenceClient {
       Future.value();
 
   @override
+  Future<void> updatePollVotes(List<PollVote> pollVotes) => Future.value();
+
+  @override
   Future<void> updateUsers(List<User> users) => Future.value();
 
   @override
@@ -137,6 +164,15 @@ class TestPersistenceClient extends ChatPersistenceClient {
   @override
   Future<void> bulkUpdateReads(Map<String, List<Read>?> reads) =>
       Future.value();
+
+  @override
+  Future<void> deletePollsByIds(List<String> pollIds) => Future.value();
+
+  @override
+  Future<void> updatePolls(List<Poll> polls) => Future.value();
+
+  @override
+  Future<void> updateDraftMessages(List<Draft> draftMessages) => Future.value();
 }
 
 void main() {
@@ -167,6 +203,31 @@ void main() {
       const cid = 'test:cid';
       final channelState = await persistenceClient.getChannelStateByCid(cid);
       expect(channelState, isNotNull);
+    });
+
+    test('deletePollsByIds', () {
+      const pollIds = ['poll-id'];
+      persistenceClient.deletePollsByIds(pollIds);
+    });
+
+    test('updatePolls', () async {
+      final poll = Poll(id: 'poll-id', name: 'poll-name', options: const []);
+      persistenceClient.updatePolls([poll]);
+    });
+
+    test('deleteDraftMessageByCid', () {
+      const cid = 'test:cid';
+      const parentId = 'parent-id';
+      persistenceClient.deleteDraftMessageByCid(cid, parentId: parentId);
+    });
+
+    test('updateDraftMessages', () async {
+      final draft = Draft(
+        channelCid: 'test:cid',
+        createdAt: DateTime.now(),
+        message: DraftMessage(id: 'message-id', text: 'message-text'),
+      );
+      persistenceClient.updateDraftMessages([draft]);
     });
 
     test('updateChannelThreads', () async {

@@ -1,7 +1,5 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:stream_chat/src/core/http/token.dart';
-import 'package:stream_chat/src/core/models/banned_user.dart';
-import 'package:stream_chat/src/core/models/user_block.dart';
 import 'package:stream_chat/stream_chat.dart';
 import 'package:test/test.dart';
 
@@ -815,10 +813,11 @@ void main() {
 
   group('Client with connected user without persistence', () {
     const apiKey = 'test-api-key';
+    const userId = 'test-user-id';
     late final api = FakeChatApi();
     late final ws = FakeWebSocket();
 
-    final user = User(id: 'test-user-id');
+    final user = User(id: userId);
     final token = Token.development(user.id).rawValue;
 
     late StreamChatClient client;
@@ -827,6 +826,8 @@ void main() {
       // fallback values
       registerFallbackValue(FakeEvent());
       registerFallbackValue(FakeMessage());
+      registerFallbackValue(FakeDraftMessage());
+      registerFallbackValue(FakePollVote());
       registerFallbackValue(const PaginationParams());
     });
 
@@ -1604,6 +1605,182 @@ void main() {
       verifyNoMoreInteractions(api.moderation);
     });
 
+    test('`.partialMemberUpdate with userId`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+      const otherUserId = 'test-other-user-id';
+      const set = {'pinned': true};
+      const unset = ['pinned'];
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: otherUserId),
+          ));
+
+      final res = await client.partialMemberUpdate(
+        channelId: channelId,
+        channelType: channelType,
+        set: set,
+        unset: unset,
+      );
+
+      expect(res, isNotNull);
+      expect(res.channelMember.userId, otherUserId);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.partialMemberUpdate with current user`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+      const set = {'pinned': true};
+      const unset = ['pinned'];
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId),
+          ));
+
+      final res = await client.partialMemberUpdate(
+        channelId: channelId,
+        channelType: channelType,
+        set: set,
+        unset: unset,
+      );
+
+      expect(res, isNotNull);
+      expect(res.channelMember.userId, userId);
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: set,
+            unset: unset,
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.pinChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(pinned: true).toJson(),
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, pinnedAt: DateTime.now()),
+          ));
+
+      final res = await client.pinChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(pinned: true).toJson(),
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.unpinChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.pinned.name],
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, pinnedAt: DateTime.now()),
+          ));
+
+      final res = await client.unpinChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.pinned.name],
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.archiveChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(archived: true).toJson(),
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, archivedAt: DateTime.now()),
+          ));
+
+      final res = await client.archiveChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            set: const MemberUpdatePayload(archived: true).toJson(),
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.unarchiveChannel`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+
+      when(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.archived.name],
+          )).thenAnswer((_) async => FakePartialUpdateMemberResponse(
+            channelMember: Member(userId: userId, pinnedAt: DateTime.now()),
+          ));
+
+      final res = await client.unarchiveChannel(
+        channelId: channelId,
+        channelType: channelType,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.updateMemberPartial(
+            channelId: channelId,
+            channelType: channelType,
+            unset: [MemberUpdateType.archived.name],
+          )).called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
     test('`.acceptChannelInvite`', () async {
       const channelType = 'test-channel-type';
       const channelId = 'test-channel-id';
@@ -1792,6 +1969,357 @@ void main() {
       verifyNoMoreInteractions(api.channel);
     });
 
+    test('`.markChannelUnread`', () async {
+      const channelType = 'test-channel-type';
+      const channelId = 'test-channel-id';
+      const messageId = 'test-message-id';
+
+      when(() => api.channel.markUnread(channelId, channelType, messageId))
+          .thenAnswer((_) async => EmptyResponse());
+
+      final res = await client.markChannelUnread(
+        channelId,
+        channelType,
+        messageId,
+      );
+
+      expect(res, isNotNull);
+
+      verify(() => api.channel.markUnread(channelId, channelType, messageId))
+          .called(1);
+      verifyNoMoreInteractions(api.channel);
+    });
+
+    test('`.createPoll`', () async {
+      final poll = Poll(
+        name: 'What is your favorite color?',
+        options: const [
+          PollOption(text: 'Red'),
+          PollOption(text: 'Blue'),
+        ],
+      );
+
+      when(() => api.polls.createPoll(poll)).thenAnswer(
+        (_) async => CreatePollResponse()..poll = poll,
+      );
+
+      final res = await client.createPoll(poll);
+      expect(res, isNotNull);
+      expect(res.poll, poll);
+
+      verify(() => api.polls.createPoll(poll)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.getPoll`', () async {
+      const pollId = 'test-poll-id';
+      final poll = Poll(
+        id: pollId,
+        name: 'What is your favorite color?',
+        options: const [
+          PollOption(text: 'Red'),
+          PollOption(text: 'Blue'),
+        ],
+      );
+
+      when(() => api.polls.getPoll(pollId)).thenAnswer(
+        (_) async => GetPollResponse()..poll = poll,
+      );
+
+      final res = await client.getPoll(pollId);
+      expect(res, isNotNull);
+      expect(res.poll, poll);
+
+      verify(() => api.polls.getPoll(pollId)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.updatePoll`', () async {
+      final poll = Poll(
+        id: 'test-poll-id',
+        name: 'What is your favorite color?',
+        options: const [
+          PollOption(text: 'Red'),
+          PollOption(text: 'Blue'),
+        ],
+      );
+
+      when(() => api.polls.updatePoll(poll)).thenAnswer(
+        (_) async => UpdatePollResponse()..poll = poll,
+      );
+
+      final res = await client.updatePoll(poll);
+      expect(res, isNotNull);
+      expect(res.poll, poll);
+
+      verify(() => api.polls.updatePoll(poll)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.partialUpdatePoll`', () async {
+      const pollId = 'test-poll-id';
+      final set = {'name': 'What is your favorite color?'};
+      final unset = <String>[];
+
+      final poll = Poll(
+        id: pollId,
+        name: set['name']!,
+        options: const [
+          PollOption(text: 'Red'),
+          PollOption(text: 'Blue'),
+        ],
+      );
+
+      when(() => api.polls.partialUpdatePoll(pollId, set: set, unset: unset))
+          .thenAnswer((_) async => UpdatePollResponse()..poll = poll);
+
+      final res =
+          await client.partialUpdatePoll(pollId, set: set, unset: unset);
+      expect(res, isNotNull);
+      expect(res.poll.id, pollId);
+      expect(res.poll.name, set['name']);
+
+      verify(() => api.polls.partialUpdatePoll(pollId, set: set, unset: unset))
+          .called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.deletePoll`', () async {
+      const pollId = 'test-poll-id';
+
+      when(() => api.polls.deletePoll(pollId))
+          .thenAnswer((_) async => EmptyResponse());
+
+      final res = await client.deletePoll(pollId);
+      expect(res, isNotNull);
+
+      verify(() => api.polls.deletePoll(pollId)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.closePoll`', () async {
+      const pollId = 'test-poll-id';
+
+      when(() => api.polls.partialUpdatePoll(pollId, set: {'is_closed': true}))
+          .thenAnswer((_) async => UpdatePollResponse());
+
+      final res = await client.closePoll(pollId);
+      expect(res, isNotNull);
+
+      verify(() =>
+              api.polls.partialUpdatePoll(pollId, set: {'is_closed': true}))
+          .called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.createPollOption`', () async {
+      const pollId = 'test-poll-id';
+      const option = PollOption(text: 'Red');
+
+      when(() => api.polls.createPollOption(pollId, option)).thenAnswer(
+          (_) async => CreatePollOptionResponse()..pollOption = option);
+
+      final res = await client.createPollOption(pollId, option);
+      expect(res, isNotNull);
+      expect(res.pollOption, option);
+
+      verify(() => api.polls.createPollOption(pollId, option)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.getPollOption`', () async {
+      const pollId = 'test-poll-id';
+      const optionId = 'test-option-id';
+      const option = PollOption(id: optionId, text: 'Red');
+
+      when(() => api.polls.getPollOption(pollId, optionId)).thenAnswer(
+          (_) async => GetPollOptionResponse()..pollOption = option);
+
+      final res = await client.getPollOption(pollId, optionId);
+      expect(res, isNotNull);
+      expect(res.pollOption, option);
+
+      verify(() => api.polls.getPollOption(pollId, optionId)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.updatePollOption`', () async {
+      const pollId = 'test-poll-id';
+      const option = PollOption(id: 'test-option-id', text: 'Red');
+
+      when(() => api.polls.updatePollOption(pollId, option)).thenAnswer(
+          (_) async => UpdatePollOptionResponse()..pollOption = option);
+
+      final res = await client.updatePollOption(pollId, option);
+      expect(res, isNotNull);
+      expect(res.pollOption, option);
+
+      verify(() => api.polls.updatePollOption(pollId, option)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.deletePollOption`', () async {
+      const pollId = 'test-poll-id';
+      const optionId = 'test-option-id';
+
+      when(() => api.polls.deletePollOption(pollId, optionId))
+          .thenAnswer((_) async => EmptyResponse());
+
+      final res = await client.deletePollOption(pollId, optionId);
+      expect(res, isNotNull);
+
+      verify(() => api.polls.deletePollOption(pollId, optionId)).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.castPollVote`', () async {
+      const messageId = 'test-message-id';
+      const pollId = 'test-poll-id';
+      const optionId = 'test-option-id';
+      final vote = PollVote(optionId: optionId);
+
+      // Custom matcher to check if the Vote object has the specified id
+      Matcher matchesVoteOption(String expected) => predicate<PollVote>(
+            (vote) => vote.optionId == expected,
+            'Vote with option $expected',
+          );
+
+      when(() => api.polls.castPollVote(
+              messageId, pollId, any(that: matchesVoteOption(optionId))))
+          .thenAnswer((_) async => CastPollVoteResponse()..vote = vote);
+
+      final res =
+          await client.castPollVote(messageId, pollId, optionId: optionId);
+      expect(res, isNotNull);
+      expect(res.vote, vote);
+
+      verify(() => api.polls.castPollVote(
+          messageId, pollId, any(that: matchesVoteOption(optionId)))).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.addPollAnswer`', () async {
+      const messageId = 'test-message-id';
+      const pollId = 'test-poll-id';
+      const answerText = 'Red';
+      final vote = PollVote(answerText: answerText);
+
+      // Custom matcher to check if the Vote object has the specified id
+      Matcher matchesVoteAnswer(String expected) => predicate<PollVote>(
+            (vote) => vote.answerText == expected,
+            'Vote with answer $expected',
+          );
+
+      when(() => api.polls.castPollVote(
+              messageId, pollId, any(that: matchesVoteAnswer(answerText))))
+          .thenAnswer((_) async => CastPollVoteResponse()..vote = vote);
+
+      final res =
+          await client.addPollAnswer(messageId, pollId, answerText: answerText);
+      expect(res, isNotNull);
+      expect(res.vote, vote);
+
+      verify(() => api.polls.castPollVote(
+              messageId, pollId, any(that: matchesVoteAnswer(answerText))))
+          .called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.removePollVote`', () async {
+      const messageId = 'test-message-id';
+      const pollId = 'test-poll-id';
+      const voteId = 'test-vote-id';
+
+      when(() => api.polls.removePollVote(messageId, pollId, voteId))
+          .thenAnswer((_) async => RemovePollVoteResponse());
+
+      final res = await client.removePollVote(messageId, pollId, voteId);
+      expect(res, isNotNull);
+
+      verify(() => api.polls.removePollVote(messageId, pollId, voteId))
+          .called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.queryPolls`', () async {
+      final filter = Filter.in_('id', const ['test-poll-id']);
+      final sort = [const SortOption<Poll>('created_at')];
+      const pagination = PaginationParams(limit: 20);
+
+      final polls = List.generate(
+        pagination.limit,
+        (index) => Poll(
+          id: 'test-poll-id-$index',
+          name: 'What is your favorite color?',
+          options: const [
+            PollOption(text: 'Red'),
+            PollOption(text: 'Blue'),
+          ],
+        ),
+      );
+
+      when(() => api.polls.queryPolls(
+            filter: filter,
+            sort: sort,
+            pagination: pagination,
+          )).thenAnswer(
+        (_) async => QueryPollsResponse()..polls = polls,
+      );
+
+      final res = await client.queryPolls(
+        filter: filter,
+        sort: sort,
+        pagination: pagination,
+      );
+      expect(res, isNotNull);
+      expect(res.polls.length, polls.length);
+
+      verify(() => api.polls.queryPolls(
+            filter: filter,
+            sort: sort,
+            pagination: pagination,
+          )).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
+    test('`.queryPollVotes`', () async {
+      const pollId = 'test-poll-id';
+      final filter = Filter.in_('id', const ['test-vote-id']);
+      final sort = [const SortOption<PollVote>('created_at')];
+      const pagination = PaginationParams(limit: 20);
+
+      final votes = List.generate(
+        pagination.limit,
+        (index) => PollVote(id: 'test-vote-id-$index', answerText: 'Red'),
+      );
+
+      when(() => api.polls.queryPollVotes(
+            pollId,
+            filter: filter,
+            sort: sort,
+            pagination: pagination,
+          )).thenAnswer(
+        (_) async => QueryPollVotesResponse()..votes = votes,
+      );
+
+      final res = await client.queryPollVotes(
+        pollId,
+        filter: filter,
+        sort: sort,
+        pagination: pagination,
+      );
+      expect(res, isNotNull);
+      expect(res.votes.length, votes.length);
+
+      verify(() => api.polls.queryPollVotes(
+            pollId,
+            filter: filter,
+            sort: sort,
+            pagination: pagination,
+          )).called(1);
+      verifyNoMoreInteractions(api.polls);
+    });
+
     test('`.updateUser`', () async {
       final user = User(
         id: 'test-user-id',
@@ -1940,6 +2468,167 @@ void main() {
 
       verify(() => api.user.queryBlockedUsers()).called(1);
       verifyNoMoreInteractions(api.user);
+    });
+
+    group('Block user state management', () {
+      test('blockUser should update blockedUserIds on client state', () async {
+        final testUser = OwnUser(id: 'test-user');
+        const userId = 'blocked-user-id';
+
+        // Verify initial state
+        expect(client.state.currentUser?.blockedUserIds, isEmpty);
+
+        when(() => api.user.blockUser(userId)).thenAnswer(
+          (_) async => UserBlockResponse()
+            ..blockedUserId = userId
+            ..blockedByUserId = testUser.id
+            ..createdAt = DateTime.now(),
+        );
+
+        await client.blockUser(userId);
+
+        // Verify - should now include the blocked user ID
+        expect(client.state.currentUser?.blockedUserIds, contains(userId));
+        verify(() => api.user.blockUser(userId)).called(1);
+        verifyNoMoreInteractions(api.user);
+      });
+
+      test(
+        'blockUser should not duplicate existing blocked user IDs',
+        () async {
+          const userId = 'blocked-user-id';
+          client.state.blockedUserIds = const [userId];
+
+          // Verify the user is already in the blocked list
+          expect(client.state.currentUser?.blockedUserIds, contains(userId));
+
+          when(() => api.user.blockUser(userId)).thenAnswer(
+            (_) async => UserBlockResponse()
+              ..blockedUserId = userId
+              ..blockedByUserId = client.state.currentUser!.id
+              ..createdAt = DateTime.now(),
+          );
+
+          await client.blockUser(userId);
+
+          // Verify - should still have only one entry
+          expect(client.state.currentUser?.blockedUserIds, contains(userId));
+          expect(client.state.currentUser?.blockedUserIds.length, 1);
+          verify(() => api.user.blockUser(userId)).called(1);
+          verifyNoMoreInteractions(api.user);
+        },
+      );
+
+      test('unblockUser should remove user from blockedUserIds', () async {
+        const blockedUserId = 'blocked-user-id';
+        const otherBlockedId = 'other-blocked-id';
+        client.state.blockedUserIds = const [blockedUserId, otherBlockedId];
+
+        // Verify initial state includes both blocked IDs
+        expect(
+          client.state.currentUser?.blockedUserIds,
+          containsAll([blockedUserId, otherBlockedId]),
+        );
+
+        when(() => api.user.unblockUser(blockedUserId)).thenAnswer(
+          (_) async => EmptyResponse(),
+        );
+
+        await client.unblockUser(blockedUserId);
+
+        // Verify - blockedUserId should be removed
+        expect(
+          client.state.currentUser?.blockedUserIds,
+          contains(otherBlockedId),
+        );
+
+        expect(
+          client.state.currentUser?.blockedUserIds,
+          isNot(contains(blockedUserId)),
+        );
+
+        verify(() => api.user.unblockUser(blockedUserId)).called(1);
+        verifyNoMoreInteractions(api.user);
+      });
+
+      test(
+        'unblockUser should be resilient if user ID not in blocked list',
+        () async {
+          const nonBlockedUserId = 'not-in-list';
+          const otherBlockedId = 'other-blocked-id';
+          client.state.blockedUserIds = const [otherBlockedId];
+
+          // Verify initial state
+          expect(
+            client.state.currentUser?.blockedUserIds,
+            contains(otherBlockedId),
+          );
+
+          expect(
+            client.state.currentUser?.blockedUserIds,
+            isNot(contains(nonBlockedUserId)),
+          );
+
+          when(() => api.user.unblockUser(nonBlockedUserId)).thenAnswer(
+            (_) async => EmptyResponse(),
+          );
+
+          await client.unblockUser(nonBlockedUserId);
+
+          // Verify - should remain unchanged
+          expect(client.state.currentUser?.blockedUserIds,
+              contains(otherBlockedId));
+          expect(client.state.currentUser?.blockedUserIds,
+              isNot(contains(nonBlockedUserId)));
+          verify(() => api.user.unblockUser(nonBlockedUserId)).called(1);
+          verifyNoMoreInteractions(api.user);
+        },
+      );
+
+      test(
+        'queryBlockedUsers should update client state with blockedUserIds',
+        () async {
+          const blockedId1 = 'blocked-1';
+          const blockedId2 = 'blocked-2';
+
+          // Verify initial state
+          expect(client.state.currentUser?.blockedUserIds, isEmpty);
+
+          // Create mock users
+          final blockedUser1 = User(id: 'blocked-user-1');
+          final blockedUser2 = User(id: 'blocked-user-2');
+
+          // Mock the queryBlockedUsers API call
+          when(() => api.user.queryBlockedUsers()).thenAnswer(
+            (_) async => BlockedUsersResponse()
+              ..blocks = [
+                UserBlock(
+                  user: user,
+                  userId: user.id,
+                  blockedUser: blockedUser1,
+                  blockedUserId: blockedId1,
+                ),
+                UserBlock(
+                  user: user,
+                  userId: user.id,
+                  blockedUser: blockedUser2,
+                  blockedUserId: blockedId2,
+                ),
+              ],
+          );
+
+          await client.queryBlockedUsers();
+
+          // Verify - should now include both blocked IDs
+          expect(
+            client.state.currentUser?.blockedUserIds,
+            containsAll([blockedId1, blockedId2]),
+          );
+
+          verify(() => api.user.queryBlockedUsers()).called(1);
+          verifyNoMoreInteractions(api.user);
+        },
+      );
     });
 
     test('`.shadowBan`', () async {
@@ -2232,6 +2921,105 @@ void main() {
             channelType,
             any(that: isSameMessageAs(message)),
           )).called(1);
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.createDraft`', () async {
+      final message = DraftMessage(id: 'test-message-id', text: 'Hello!');
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      when(
+        () => api.message.createDraft(
+          channelId,
+          channelType,
+          any(that: isSameDraftMessageAs(message)),
+        ),
+      ).thenAnswer(
+        (_) async => CreateDraftResponse()
+          ..draft = Draft(
+            channelCid: '$channelType:$channelId',
+            createdAt: DateTime.now(),
+            message: message,
+          ),
+      );
+
+      final res = await client.createDraft(
+        message,
+        channelId,
+        channelType,
+      );
+
+      expect(res, isNotNull);
+      expect(res.draft.message, isSameDraftMessageAs(message));
+
+      verify(() => api.message.createDraft(
+            channelId,
+            channelType,
+            any(that: isSameDraftMessageAs(message)),
+          )).called(1);
+
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.deleteDraft`', () async {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      when(() => api.message.deleteDraft(channelId, channelType))
+          .thenAnswer((_) async => EmptyResponse());
+
+      final res = await client.deleteDraft(channelId, channelType);
+      expect(res, isNotNull);
+
+      verify(() => api.message.deleteDraft(channelId, channelType));
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.getDraft`', () async {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      final message = DraftMessage(id: 'test-message-id', text: 'Hello!');
+
+      when(() => api.message.getDraft(channelId, channelType))
+          .thenAnswer((_) async => GetDraftResponse()
+            ..draft = Draft(
+              channelCid: '$channelType:$channelId',
+              createdAt: DateTime.now(),
+              message: message,
+            ));
+
+      final res = await client.getDraft(channelId, channelType);
+
+      expect(res, isNotNull);
+      expect(res.draft.message, isSameDraftMessageAs(message));
+
+      verify(() => api.message.getDraft(channelId, channelType));
+      verifyNoMoreInteractions(api.message);
+    });
+
+    test('`.queryDrafts`', () async {
+      const channelId = 'test-channel-id';
+      const channelType = 'test-channel-type';
+
+      final drafts = [
+        Draft(
+          channelCid: '$channelType:$channelId',
+          createdAt: DateTime.now(),
+          message: DraftMessage(id: 'test-message-id', text: 'Hello!'),
+        )
+      ];
+
+      when(() => api.message.queryDrafts())
+          .thenAnswer((_) async => QueryDraftsResponse()..drafts = drafts);
+
+      final res = await client.queryDrafts();
+
+      expect(res, isNotNull);
+      expect(res.drafts.length, drafts.length);
+
+      verify(() => api.message.queryDrafts()).called(1);
       verifyNoMoreInteractions(api.message);
     });
 

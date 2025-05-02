@@ -1,4 +1,5 @@
 /// Describes capabilities of a user vis-a-vis a channel
+@Deprecated("Use 'ChannelCapability' instead")
 class PermissionType {
   /// Capability required to send a message in the channel
   /// Channel is not frozen (or user has UseFrozenChannel permission)
@@ -31,6 +32,9 @@ class PermissionType {
   /// User has UpdateChannelCooldown permission.
   /// Allows to enable/disable slow mode in the channel
   static const String setChannelCooldown = 'set-channel-cooldown';
+
+  /// User has the ability to skip slow mode when it's active.
+  static const String skipSlowMode = 'skip-slow-mode';
 
   /// User has RemoveOwnChannelMembership or UpdateChannelMembers permission
   static const String leaveChannel = 'leave-channel';
@@ -93,4 +97,7 @@ class PermissionType {
   /// Capability required to update/edit channel members
   /// Channel is not distinct and user has UpdateChannelMembers permission
   static const String updateChannelMembers = 'update-channel-members';
+
+  /// Capability required to send a poll in a channel.
+  static const String sendPoll = 'send-poll';
 }

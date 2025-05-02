@@ -5,7 +5,7 @@ import 'package:stream_chat/stream_chat.dart';
 part 'event.g.dart';
 
 /// The class that contains the information about an event
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class Event {
   /// Constructor used for json serialization
   Event({
@@ -16,6 +16,8 @@ class Event {
     this.me,
     this.user,
     this.message,
+    this.poll,
+    this.pollVote,
     this.totalUnreadCount,
     this.unreadChannels,
     this.reaction,
@@ -24,11 +26,19 @@ class Event {
     this.member,
     this.channelId,
     this.channelType,
+    this.channelLastMessageAt,
     this.parentId,
     this.hardDelete,
     this.aiState,
     this.aiMessage,
     this.messageId,
+    this.thread,
+    this.unreadThreadMessages,
+    this.unreadThreads,
+    this.lastReadAt,
+    this.unreadMessages,
+    this.lastReadMessageId,
+    this.draft,
     this.extraData = const {},
     this.isLocal = true,
   }) : createdAt = createdAt?.toUtc() ?? DateTime.now().toUtc();
@@ -53,6 +63,9 @@ class Event {
   /// The channel type to which the event belongs
   final String? channelType;
 
+  /// The dateTime at which the last message was sent in the channel.
+  final DateTime? channelLastMessageAt;
+
   /// The connection id in which the event has been sent
   final String? connectionId;
 
@@ -68,8 +81,14 @@ class Event {
   /// The message sent with the event
   final Message? message;
 
+  /// The poll sent with the event
+  final Poll? poll;
+
+  /// The poll vote sent with the event
+  final PollVote? pollVote;
+
   /// The channel sent with the event
-  final EventChannel? channel;
+  final ChannelModel? channel;
 
   /// The member sent with the event
   final Member? member;
@@ -94,7 +113,6 @@ class Event {
   final bool isLocal;
 
   /// This is true if the message has been hard deleted
-  @JsonKey(includeIfNull: false)
   final bool? hardDelete;
 
   /// The current state of the AI assistant.
@@ -107,26 +125,29 @@ class Event {
   /// The message id to which the event belongs.
   final String? messageId;
 
-  /// Map of custom channel extraData
-  final Map<String, Object?> extraData;
+  /// The thread object sent with the event.
+  final Thread? thread;
+
+  /// The number of unread thread messages.
+  final int? unreadThreadMessages;
+
+  /// The number of unread threads.
+  final int? unreadThreads;
 
   /// Create date of the last read message (notification.mark_unread)
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime? get lastReadAt {
-    if (extraData.containsKey('last_read_at')) {
-      return DateTime.parse(extraData['last_read_at']! as String);
-    }
-
-    return null;
-  }
+  final DateTime? lastReadAt;
 
   /// The number of unread messages (notification.mark_unread)
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  int? get unreadMessages => extraData['unread_messages'] as int?;
+  final int? unreadMessages;
 
   /// The id of the last read message (notification.mark_read)
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  String? get lastReadMessageId => extraData['last_read_message_id'] as String?;
+  final String? lastReadMessageId;
+
+  /// The draft sent with the event.
+  final Draft? draft;
+
+  /// Map of custom channel extraData
+  final Map<String, Object?> extraData;
 
   /// Known top level fields.
   /// Useful for [Serializer] methods.
@@ -138,6 +159,8 @@ class Event {
     'me',
     'user',
     'message',
+    'poll',
+    'poll_vote',
     'total_unread_count',
     'unread_channels',
     'reaction',
@@ -146,12 +169,20 @@ class Event {
     'member',
     'channel_id',
     'channel_type',
+    'channel_last_message_at',
     'parent_id',
     'hard_delete',
     'is_local',
     'ai_state',
     'ai_message',
     'message_id',
+    'thread',
+    'unread_thread_messages',
+    'unread_threads',
+    'last_read_at',
+    'unread_messages',
+    'last_read_message_id',
+    'draft',
   ];
 
   /// Serialize to json
@@ -165,12 +196,15 @@ class Event {
     String? cid,
     String? channelId,
     String? channelType,
+    DateTime? channelLastMessageAt,
     String? connectionId,
     DateTime? createdAt,
     OwnUser? me,
     User? user,
     Message? message,
-    EventChannel? channel,
+    Poll? poll,
+    PollVote? pollVote,
+    ChannelModel? channel,
     Member? member,
     Reaction? reaction,
     int? totalUnreadCount,
@@ -181,6 +215,13 @@ class Event {
     AITypingState? aiState,
     String? aiMessage,
     String? messageId,
+    Thread? thread,
+    int? unreadThreadMessages,
+    int? unreadThreads,
+    DateTime? lastReadAt,
+    int? unreadMessages,
+    String? lastReadMessageId,
+    Draft? draft,
     Map<String, Object?>? extraData,
   }) =>
       Event(
@@ -191,6 +232,8 @@ class Event {
         me: me ?? this.me,
         user: user ?? this.user,
         message: message ?? this.message,
+        poll: poll ?? this.poll,
+        pollVote: pollVote ?? this.pollVote,
         totalUnreadCount: totalUnreadCount ?? this.totalUnreadCount,
         unreadChannels: unreadChannels ?? this.unreadChannels,
         reaction: reaction ?? this.reaction,
@@ -199,58 +242,22 @@ class Event {
         member: member ?? this.member,
         channelId: channelId ?? this.channelId,
         channelType: channelType ?? this.channelType,
+        channelLastMessageAt: channelLastMessageAt ?? this.channelLastMessageAt,
         parentId: parentId ?? this.parentId,
         hardDelete: hardDelete ?? this.hardDelete,
-        extraData: extraData ?? this.extraData,
         aiState: aiState ?? this.aiState,
         aiMessage: aiMessage ?? this.aiMessage,
         messageId: messageId ?? this.messageId,
+        thread: thread ?? this.thread,
+        unreadThreadMessages: unreadThreadMessages ?? this.unreadThreadMessages,
+        unreadThreads: unreadThreads ?? this.unreadThreads,
+        lastReadAt: lastReadAt ?? this.lastReadAt,
+        unreadMessages: unreadMessages ?? this.unreadMessages,
+        lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
+        draft: draft ?? this.draft,
         isLocal: isLocal,
+        extraData: extraData ?? this.extraData,
       );
-}
-
-/// The channel embedded in the event object
-@JsonSerializable(createToJson: false)
-class EventChannel extends ChannelModel {
-  /// Constructor used for json serialization
-  EventChannel({
-    this.members,
-    super.id,
-    super.type,
-    required String super.cid,
-    super.ownCapabilities,
-    required ChannelConfig super.config,
-    super.createdBy,
-    super.frozen,
-    super.lastMessageAt,
-    required DateTime super.createdAt,
-    required DateTime super.updatedAt,
-    super.deletedAt,
-    super.memberCount,
-    super.cooldown,
-    super.team,
-    super.disabled,
-    super.hidden,
-    super.truncatedAt,
-    Map<String, Object?>? extraData,
-  }) : super(extraData: extraData ?? {});
-
-  /// Create a new instance from a json
-  factory EventChannel.fromJson(Map<String, dynamic> json) =>
-      _$EventChannelFromJson(Serializer.moveToExtraDataFromRoot(
-        json,
-        topLevelFields,
-      ));
-
-  /// A paginated list of channel members
-  final List<Member>? members;
-
-  /// Known top level fields.
-  /// Useful for [Serializer] methods.
-  static final topLevelFields = [
-    'members',
-    ...ChannelModel.topLevelFields,
-  ];
 }
 
 /// {@template aiState}

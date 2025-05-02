@@ -20,9 +20,11 @@ class ChannelConfig {
     this.readEvents = false,
     this.replies = false,
     this.search = false,
+    this.polls = false,
     this.typingEvents = false,
     this.uploads = false,
     this.urlEnrichment = false,
+    this.skipLastMsgUpdateForSystemMsgs = false,
   })  : createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now();
 
@@ -66,6 +68,9 @@ class ChannelConfig {
   /// True if it's possible to perform a search in this channel
   final bool search;
 
+  /// True if polls are active for this channel
+  final bool polls;
+
   /// True if typing events should be sent for this channel
   final bool typingEvents;
 
@@ -74,6 +79,13 @@ class ChannelConfig {
 
   /// True if urls appears as attachments
   final bool urlEnrichment;
+
+  /// If true the last message at date will not be updated when a system message
+  /// is added.
+  ///
+  /// This is useful for scenarios where you want to track the last time a user
+  /// message was added to the channel.
+  final bool skipLastMsgUpdateForSystemMsgs;
 
   /// Serialize to json
   Map<String, dynamic> toJson() => _$ChannelConfigToJson(this);

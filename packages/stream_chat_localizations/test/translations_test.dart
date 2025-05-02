@@ -19,6 +19,7 @@ void main() {
       expect(localizations.userLastOnlineText, isNotNull);
       expect(localizations.userOnlineText, isNotNull);
       expect(localizations.userOnlineText, isNotNull);
+      expect(localizations.draftLabel, isNotNull);
       // no users
       expect(localizations.userTypingText([]), isNotNull);
       // single user
@@ -52,6 +53,7 @@ void main() {
       expect(localizations.resultCountText(3), isNotNull);
       expect(localizations.messageDeletedText, isNotNull);
       expect(localizations.messageDeletedLabel, isNotNull);
+      expect(localizations.systemMessageLabel, isNotNull);
       expect(localizations.messageReactionsLabel, isNotNull);
       expect(localizations.emptyChatMessagesText, isNotNull);
       expect(localizations.threadSeparatorText(3), isNotNull);
@@ -205,6 +207,106 @@ void main() {
       expect(localizations.unreadMessagesSeparatorText(), isNotNull);
       expect(localizations.markUnreadError, isNotNull);
       expect(localizations.markAsUnreadLabel, isNotNull);
+      // Create poll
+      expect(localizations.createPollLabel(), isNotNull);
+      // Create a new poll
+      expect(localizations.createPollLabel(isNew: true), isNotNull);
+      expect(localizations.questionsLabel, isNotNull);
+      expect(localizations.askAQuestionLabel, isNotNull);
+      // Question must be at least 5 characters long
+      expect(
+        localizations.pollQuestionValidationError(3, const (min: 5, max: 10)),
+        isNotNull,
+      );
+      // Question must be at most 10 characters long
+      expect(
+        localizations.pollQuestionValidationError(11, const (min: 5, max: 10)),
+        isNotNull,
+      );
+      // Option
+      expect(localizations.optionLabel(), isNotNull);
+      // Options
+      expect(localizations.optionLabel(isPlural: true), isNotNull);
+      expect(localizations.pollOptionEmptyError, isNotNull);
+      expect(localizations.pollOptionDuplicateError, isNotNull);
+      expect(localizations.addAnOptionLabel, isNotNull);
+      expect(localizations.multipleAnswersLabel, isNotNull);
+      expect(localizations.maximumVotesPerPersonLabel, isNotNull);
+      // Vote count must be at least 1
+      expect(
+        localizations.maxVotesPerPersonValidationError(
+          0,
+          const (min: 1, max: 10),
+        ),
+        isNotNull,
+      );
+      // Vote count must be at most 10
+      expect(
+        localizations.maxVotesPerPersonValidationError(
+          11,
+          const (min: 1, max: 10),
+        ),
+        isNotNull,
+      );
+      expect(localizations.anonymousPollLabel, isNotNull);
+      expect(localizations.suggestAnOptionLabel, isNotNull);
+      expect(localizations.addACommentLabel, isNotNull);
+      expect(localizations.createLabel, isNotNull);
+      expect(localizations.endVoteLabel, isNotNull);
+      expect(localizations.enterANewOptionLabel, isNotNull);
+      expect(localizations.enterYourCommentLabel, isNotNull);
+      expect(localizations.loadingPollVotesError, isNotNull);
+      expect(localizations.noPollVotesLabel, isNotNull);
+      expect(localizations.pollCommentsLabel, isNotNull);
+      expect(localizations.pollOptionsLabel, isNotNull);
+      expect(localizations.pollResultsLabel, isNotNull);
+      // Voting mode
+      expect(
+        localizations.pollVotingModeLabel(const PollVotingMode.disabled()),
+        isNotNull,
+      );
+      expect(
+        localizations.pollVotingModeLabel(const PollVotingMode.unique()),
+        isNotNull,
+      );
+      expect(
+        localizations.pollVotingModeLabel(
+          const PollVotingMode.limited(count: 3),
+        ),
+        isNotNull,
+      );
+      expect(
+        localizations.pollVotingModeLabel(const PollVotingMode.all()),
+        isNotNull,
+      );
+      expect(localizations.seeAllOptionsLabel(), isNotNull);
+      expect(localizations.seeAllOptionsLabel(count: 3), isNotNull);
+      expect(localizations.showAllVotesLabel(), isNotNull);
+      expect(localizations.showAllVotesLabel(count: 3), isNotNull);
+      expect(localizations.updateYourCommentLabel, isNotNull);
+      expect(localizations.viewCommentsLabel, isNotNull);
+      expect(localizations.viewResultsLabel, isNotNull);
+      // Vote count
+      expect(localizations.voteCountLabel(), isNotNull);
+      expect(localizations.voteCountLabel(count: 3), isNotNull);
+      expect(localizations.repliedToLabel, isNotNull);
+      expect(localizations.newThreadsLabel(count: 3), isNotNull);
+      expect(localizations.slideToCancelLabel, isNotNull);
+      expect(localizations.holdToRecordLabel, isNotNull);
+      expect(localizations.sendAnywayLabel, isNotNull);
+      expect(localizations.moderatedMessageBlockedText, isNotNull);
+      expect(localizations.moderationReviewModalTitle, isNotNull);
+      expect(localizations.moderationReviewModalDescription, isNotNull);
+      expect(localizations.emptyMessagePreviewText, isNotNull);
+      expect(localizations.voiceRecordingText, isNotNull);
+      expect(localizations.audioAttachmentText, isNotNull);
+      expect(localizations.imageAttachmentText, isNotNull);
+      expect(localizations.videoAttachmentText, isNotNull);
+      expect(localizations.pollYouVotedText, isNotNull);
+      expect(localizations.pollSomeoneVotedText('TestUser'), isNotNull);
+      expect(localizations.pollYouCreatedText, isNotNull);
+      expect(localizations.pollSomeoneCreatedText('TestUser'), isNotNull);
+      expect(localizations.systemMessageLabel, isNotNull);
     });
   }
 

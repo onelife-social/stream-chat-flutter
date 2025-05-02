@@ -38,12 +38,15 @@ void main() {
           client: client,
           child: StreamChannel(
             channel: channel,
-            child: const Scaffold(
+            child: Scaffold(
               body: StreamUnreadIndicator(),
             ),
           ),
         ),
       ));
+
+      // wait for the initial state to be rendered.
+      await tester.pumpAndSettle();
 
       expect(find.text('10'), findsOneWidget);
     },
@@ -56,7 +59,6 @@ void main() {
       final clientState = MockClientState();
       final channel = MockChannel();
       final channelState = MockChannelState();
-      when(() => channel.cid).thenReturn('cid');
       final lastMessageAt = DateTime.parse('2020-06-22 12:00:00');
 
       when(() => client.state).thenReturn(clientState);
@@ -77,13 +79,16 @@ void main() {
           child: StreamChannel(
             channel: channel,
             child: Scaffold(
-              body: StreamUnreadIndicator(
+              body: StreamUnreadIndicator.channels(
                 cid: channel.cid,
               ),
             ),
           ),
         ),
       ));
+
+      // wait for the initial state to be rendered.
+      await tester.pumpAndSettle();
 
       expect(find.text('0'), findsNothing);
     },
@@ -95,7 +100,6 @@ void main() {
       final client = MockClient();
       final clientState = MockClientState();
       final channel = MockChannel();
-      when(() => channel.cid).thenReturn('cid');
       final channelState = MockChannelState();
       final lastMessageAt = DateTime.parse('2020-06-22 12:00:00');
 
@@ -117,13 +121,16 @@ void main() {
           child: StreamChannel(
             channel: channel,
             child: Scaffold(
-              body: StreamUnreadIndicator(
+              body: StreamUnreadIndicator.channels(
                 cid: channel.cid,
               ),
             ),
           ),
         ),
       ));
+
+      // wait for the initial state to be rendered.
+      await tester.pumpAndSettle();
 
       expect(find.text('99+'), findsOneWidget);
     },

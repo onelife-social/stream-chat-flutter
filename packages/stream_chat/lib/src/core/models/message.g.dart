@@ -9,7 +9,9 @@ part of 'message.dart';
 Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       id: json['id'] as String?,
       text: json['text'] as String?,
-      type: json['type'] as String? ?? 'regular',
+      type: json['type'] == null
+          ? MessageType.regular
+          : MessageType.fromJson(json['type'] as String),
       attachments: (json['attachments'] as List<dynamic>?)
               ?.map((e) => Attachment.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -68,33 +70,41 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       pinnedBy: json['pinned_by'] == null
           ? null
           : User.fromJson(json['pinned_by'] as Map<String, dynamic>),
+      poll: json['poll'] == null
+          ? null
+          : Poll.fromJson(json['poll'] as Map<String, dynamic>),
+      pollId: json['poll_id'] as String?,
       extraData: json['extra_data'] as Map<String, dynamic>? ?? const {},
       i18n: (json['i18n'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
+      restrictedVisibility: (json['restricted_visibility'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      moderation: Message._moderationReadValue(json, 'moderation') == null
+          ? null
+          : Moderation.fromJson(Message._moderationReadValue(json, 'moderation')
+              as Map<String, dynamic>),
+      draft: json['draft'] == null
+          ? null
+          : Draft.fromJson(json['draft'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$MessageToJson(Message instance) {
-  final val = <String, dynamic>{
-    'id': instance.id,
-    'text': instance.text,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('type', Message._typeToJson(instance.type));
-  val['attachments'] = instance.attachments.map((e) => e.toJson()).toList();
-  val['mentioned_users'] = User.toIds(instance.mentionedUsers);
-  val['parent_id'] = instance.parentId;
-  val['quoted_message_id'] = instance.quotedMessageId;
-  val['show_in_channel'] = instance.showInChannel;
-  val['silent'] = instance.silent;
-  val['pinned'] = instance.pinned;
-  val['pin_expires'] = instance.pinExpires?.toIso8601String();
-  val['extra_data'] = instance.extraData;
-  return val;
-}
+Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
+      'id': instance.id,
+      'text': instance.text,
+      if (MessageType.toJson(instance.type) case final value?) 'type': value,
+      'attachments': instance.attachments.map((e) => e.toJson()).toList(),
+      'mentioned_users': User.toIds(instance.mentionedUsers),
+      'parent_id': instance.parentId,
+      'quoted_message_id': instance.quotedMessageId,
+      'show_in_channel': instance.showInChannel,
+      'silent': instance.silent,
+      'pinned': instance.pinned,
+      'pin_expires': instance.pinExpires?.toIso8601String(),
+      'poll_id': instance.pollId,
+      if (instance.restrictedVisibility case final value?)
+        'restricted_visibility': value,
+      'draft': instance.draft?.toJson(),
+      'extra_data': instance.extraData,
+    };

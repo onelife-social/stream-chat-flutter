@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -67,6 +66,8 @@ Future<T?> showStreamAttachmentPickerModalBottomSheet<T>({
   required BuildContext context,
   Iterable<AttachmentPickerOption>? customOptions,
   List<AttachmentPickerType> allowedTypes = AttachmentPickerType.values,
+  Poll? initialPoll,
+  PollConfig? pollConfig,
   List<Attachment>? initialAttachments,
   StreamAttachmentPickerController? controller,
   ErrorListener? onError,
@@ -78,6 +79,8 @@ Future<T?> showStreamAttachmentPickerModalBottomSheet<T>({
   bool useRootNavigator = false,
   bool isDismissible = true,
   bool enableDrag = true,
+  bool useSystemAttachmentPicker = false,
+  @Deprecated("Use 'useSystemAttachmentPicker' instead.")
   bool useNativeAttachmentPickerOnMobile = false,
   RouteSettings? routeSettings,
   AnimationController? transitionAnimationController,
@@ -108,15 +111,22 @@ Future<T?> showStreamAttachmentPickerModalBottomSheet<T>({
     builder: (BuildContext context) {
       return StreamPlatformAttachmentPickerBottomSheetBuilder(
         controller: controller,
+        initialPoll: initialPoll,
         initialAttachments: initialAttachments,
         builder: (context, controller, child) {
-          final currentPlatform = defaultTargetPlatform;
-          final isWebOrDesktop = kIsWeb ||
-              currentPlatform == TargetPlatform.macOS ||
-              currentPlatform == TargetPlatform.linux ||
-              currentPlatform == TargetPlatform.windows;
+          final isWebOrDesktop = switch (CurrentPlatform.type) {
+            PlatformType.web ||
+            PlatformType.macOS ||
+            PlatformType.linux ||
+            PlatformType.windows =>
+              true,
+            _ => false,
+          };
 
-          if (isWebOrDesktop || useNativeAttachmentPickerOnMobile) {
+          final useSystemPicker = useSystemAttachmentPicker || //
+              useNativeAttachmentPickerOnMobile;
+
+          if (useSystemPicker || isWebOrDesktop) {
             return webOrDesktopAttachmentPickerBuilder.call(
               context: context,
               onError: onError,
@@ -125,6 +135,8 @@ Future<T?> showStreamAttachmentPickerModalBottomSheet<T>({
               customOptions: customOptions?.map(
                 WebOrDesktopAttachmentPickerOption.fromAttachmentPickerOption,
               ),
+              initialPoll: initialPoll,
+              pollConfig: pollConfig,
               attachmentThumbnailSize: attachmentThumbnailSize,
               attachmentThumbnailFormat: attachmentThumbnailFormat,
               attachmentThumbnailQuality: attachmentThumbnailQuality,
@@ -138,6 +150,8 @@ Future<T?> showStreamAttachmentPickerModalBottomSheet<T>({
             controller: controller,
             allowedTypes: allowedTypes,
             customOptions: customOptions,
+            initialPoll: initialPoll,
+            pollConfig: pollConfig,
             attachmentThumbnailSize: attachmentThumbnailSize,
             attachmentThumbnailFormat: attachmentThumbnailFormat,
             attachmentThumbnailQuality: attachmentThumbnailQuality,
@@ -155,6 +169,7 @@ class StreamPlatformAttachmentPickerBottomSheetBuilder extends StatefulWidget {
   const StreamPlatformAttachmentPickerBottomSheetBuilder({
     super.key,
     this.customOptions,
+    this.initialPoll,
     this.initialAttachments,
     this.child,
     this.controller,
@@ -173,6 +188,9 @@ class StreamPlatformAttachmentPickerBottomSheetBuilder extends StatefulWidget {
 
   /// The custom options to be displayed in the attachment picker.
   final List<AttachmentPickerOption>? customOptions;
+
+  /// The initial poll.
+  final Poll? initialPoll;
 
   /// The initial attachments.
   final List<Attachment>? initialAttachments;
@@ -194,13 +212,14 @@ class _StreamPlatformAttachmentPickerBottomSheetBuilderState
     super.initState();
     _controller = widget.controller ??
         StreamAttachmentPickerController(
+          initialPoll: widget.initialPoll,
           initialAttachments: widget.initialAttachments,
         );
   }
 
   // Handle a potential change in StreamAttachmentPickerController by properly
   // disposing of the old one and setting up the new one, if needed.
-  void _updateTextEditingController(
+  void _updateAttachmentPickerController(
     StreamAttachmentPickerController? old,
     StreamAttachmentPickerController? current,
   ) {
@@ -209,7 +228,10 @@ class _StreamPlatformAttachmentPickerBottomSheetBuilderState
       _controller.dispose();
       _controller = current!;
     } else if (current == null) {
-      _controller = StreamAttachmentPickerController();
+      _controller = StreamAttachmentPickerController(
+        initialPoll: widget.initialPoll,
+        initialAttachments: widget.initialAttachments,
+      );
     } else {
       _controller = current;
     }
@@ -220,7 +242,7 @@ class _StreamPlatformAttachmentPickerBottomSheetBuilderState
     StreamPlatformAttachmentPickerBottomSheetBuilder oldWidget,
   ) {
     super.didUpdateWidget(oldWidget);
-    _updateTextEditingController(
+    _updateAttachmentPickerController(
       oldWidget.controller,
       widget.controller,
     );

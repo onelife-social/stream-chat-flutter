@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// A tile that is used to display the error indicator when
@@ -68,15 +69,20 @@ class StreamScrollViewLoadMoreError extends StatelessWidget {
     final errorText = AnimatedDefaultTextStyle(
       style: errorStyle ?? theme.textTheme.body.copyWith(color: Colors.white),
       duration: kThemeChangeDuration,
-      child: error ?? const SizedBox(),
+      child: error ?? const Empty(),
     );
 
     final errorIcon = AnimatedSwitcher(
       duration: kThemeChangeDuration,
-      child: this.errorIcon ?? StreamSvgIcon.retry(color: Colors.white),
+      child: this.errorIcon ??
+          const StreamSvgIcon(
+            color: Colors.white,
+            icon: StreamSvgIcons.retry,
+          ),
     );
 
     final backgroundColor = this.backgroundColor ??
+        // ignore: deprecated_member_use
         theme.colorTheme.textLowEmphasis.withOpacity(0.9);
 
     final children = [errorText, errorIcon];

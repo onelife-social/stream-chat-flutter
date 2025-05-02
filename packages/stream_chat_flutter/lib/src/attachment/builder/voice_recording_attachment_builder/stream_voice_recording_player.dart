@@ -1,3 +1,5 @@
+// coverage:ignore-file
+
 import 'dart:async';
 import 'dart:math';
 
@@ -5,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:stream_chat_flutter/src/attachment/builder/voice_recording_attachment_builder/stream_voice_recording_slider.dart';
+import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template StreamVoiceRecordingPlayer}
@@ -14,6 +17,7 @@ import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 ///
 /// When waveBars are not provided they are shown as 0 bars.
 /// {@endtemplate}
+@Deprecated("Use 'StreamVoiceRecordingAttachment' instead")
 class StreamVoiceRecordingPlayer extends StatefulWidget {
   /// {@macro StreamVoiceRecordingPlayer}
   const StreamVoiceRecordingPlayer({
@@ -51,6 +55,7 @@ class StreamVoiceRecordingPlayer extends StatefulWidget {
       _StreamVoiceRecordingPlayerState();
 }
 
+@Deprecated("Use 'StreamVoiceRecordingAttachment' instead")
 class _StreamVoiceRecordingPlayerState
     extends State<StreamVoiceRecordingPlayer> {
   var _seeking = false;
@@ -218,7 +223,7 @@ class _StreamVoiceRecordingPlayerState
         style: theme.fileSizeTextStyle,
       );
     } else {
-      return const SizedBox.shrink();
+      return const Empty();
     }
   }
 

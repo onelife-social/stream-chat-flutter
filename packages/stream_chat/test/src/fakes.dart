@@ -8,6 +8,7 @@ import 'package:stream_chat/src/core/api/general_api.dart';
 import 'package:stream_chat/src/core/api/guest_api.dart';
 import 'package:stream_chat/src/core/api/message_api.dart';
 import 'package:stream_chat/src/core/api/moderation_api.dart';
+import 'package:stream_chat/src/core/api/polls_api.dart';
 import 'package:stream_chat/src/core/api/user_api.dart';
 import 'package:stream_chat/src/core/http/token.dart';
 import 'package:stream_chat/src/core/http/token_manager.dart';
@@ -58,6 +59,11 @@ class FakeChatApi extends Fake implements StreamChatApi {
   @override
   MessageApi get message => _message ??= MockMessageApi();
 
+  @override
+  PollsApi get polls => _polls ??= MockPollsApi();
+
+  PollsApi? _polls;
+
   ChannelApi? _channel;
 
   @override
@@ -87,7 +93,7 @@ class FakeChatApi extends Fake implements StreamChatApi {
 
 class FakeClientState extends Fake implements ClientState {
   @override
-  OwnUser? get currentUser => OwnUser(id: 'test-user-id');
+  OwnUser? get currentUser => OwnUser(id: 'test-user-id', name: 'Test User');
 
   @override
   int totalUnreadCount = 0;
@@ -100,11 +106,15 @@ class FakeClientState extends Fake implements ClientState {
 
 class FakeMessage extends Fake implements Message {}
 
+class FakeDraftMessage extends Fake implements DraftMessage {}
+
 class FakeAttachmentFile extends Fake implements AttachmentFile {}
 
 class FakeEvent extends Fake implements Event {}
 
 class FakeUser extends Fake implements User {}
+
+class FakePollVote extends Fake implements PollVote {}
 
 class FakeWebSocket extends Fake implements WebSocket {
   BehaviorSubject<ConnectionStatus>? _connectionStatusController;
@@ -194,3 +204,14 @@ class FakeWebSocketWithConnectionError extends Fake implements WebSocket {
 }
 
 class FakeChannelState extends Fake implements ChannelState {}
+
+class FakePartialUpdateMemberResponse extends Fake
+    implements PartialUpdateMemberResponse {
+  FakePartialUpdateMemberResponse({
+    Member? channelMember,
+  }) : _channelMember = channelMember ?? Member();
+
+  final Member _channelMember;
+  @override
+  Member get channelMember => _channelMember;
+}
