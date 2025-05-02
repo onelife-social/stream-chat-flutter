@@ -12,7 +12,7 @@ part of 'paged_value_notifier.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$PagedValue<Key, Value> {
@@ -85,31 +85,25 @@ class _$PagedValueCopyWithImpl<Key, Value, $Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
-abstract class _$$SuccessImplCopyWith<Key, Value, $Res> {
-  factory _$$SuccessImplCopyWith(_$SuccessImpl<Key, Value> value,
-          $Res Function(_$SuccessImpl<Key, Value>) then) =
-      __$$SuccessImplCopyWithImpl<Key, Value, $Res>;
+abstract class _$$SuccessCopyWith<Key, Value, $Res> {
+  factory _$$SuccessCopyWith(_$Success<Key, Value> value,
+          $Res Function(_$Success<Key, Value>) then) =
+      __$$SuccessCopyWithImpl<Key, Value, $Res>;
   @useResult
   $Res call({List<Value> items, Key? nextPageKey, StreamChatError? error});
 }
 
 /// @nodoc
-class __$$SuccessImplCopyWithImpl<Key, Value, $Res>
-    extends _$PagedValueCopyWithImpl<Key, Value, $Res,
-        _$SuccessImpl<Key, Value>>
-    implements _$$SuccessImplCopyWith<Key, Value, $Res> {
-  __$$SuccessImplCopyWithImpl(_$SuccessImpl<Key, Value> _value,
-      $Res Function(_$SuccessImpl<Key, Value>) _then)
+class __$$SuccessCopyWithImpl<Key, Value, $Res>
+    extends _$PagedValueCopyWithImpl<Key, Value, $Res, _$Success<Key, Value>>
+    implements _$$SuccessCopyWith<Key, Value, $Res> {
+  __$$SuccessCopyWithImpl(
+      _$Success<Key, Value> _value, $Res Function(_$Success<Key, Value>) _then)
       : super(_value, _then);
 
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -117,7 +111,7 @@ class __$$SuccessImplCopyWithImpl<Key, Value, $Res>
     Object? nextPageKey = freezed,
     Object? error = freezed,
   }) {
-    return _then(_$SuccessImpl<Key, Value>(
+    return _then(_$Success<Key, Value>(
       items: null == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
@@ -136,9 +130,9 @@ class __$$SuccessImplCopyWithImpl<Key, Value, $Res>
 
 /// @nodoc
 
-class _$SuccessImpl<Key, Value> extends Success<Key, Value>
+class _$Success<Key, Value> extends Success<Key, Value>
     with DiagnosticableTreeMixin {
-  const _$SuccessImpl(
+  const _$Success(
       {required final List<Value> items, this.nextPageKey, this.error})
       : _items = items,
         super._();
@@ -178,10 +172,10 @@ class _$SuccessImpl<Key, Value> extends Success<Key, Value>
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SuccessImpl<Key, Value> &&
+            other is _$Success<Key, Value> &&
             const DeepCollectionEquality().equals(other._items, _items) &&
             const DeepCollectionEquality()
                 .equals(other.nextPageKey, nextPageKey) &&
@@ -195,13 +189,11 @@ class _$SuccessImpl<Key, Value> extends Success<Key, Value>
       const DeepCollectionEquality().hash(nextPageKey),
       error);
 
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SuccessImplCopyWith<Key, Value, _$SuccessImpl<Key, Value>> get copyWith =>
-      __$$SuccessImplCopyWithImpl<Key, Value, _$SuccessImpl<Key, Value>>(
+  _$$SuccessCopyWith<Key, Value, _$Success<Key, Value>> get copyWith =>
+      __$$SuccessCopyWithImpl<Key, Value, _$Success<Key, Value>>(
           this, _$identity);
 
   @override
@@ -283,7 +275,7 @@ abstract class Success<Key, Value> extends PagedValue<Key, Value> {
   const factory Success(
       {required final List<Value> items,
       final Key? nextPageKey,
-      final StreamChatError? error}) = _$SuccessImpl<Key, Value>;
+      final StreamChatError? error}) = _$Success<Key, Value>;
   const Success._() : super._();
 
   /// List with all items loaded so far.
@@ -294,39 +286,32 @@ abstract class Success<Key, Value> extends PagedValue<Key, Value> {
 
   /// The current error, if any.
   StreamChatError? get error;
-
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SuccessImplCopyWith<Key, Value, _$SuccessImpl<Key, Value>> get copyWith =>
+  @JsonKey(ignore: true)
+  _$$SuccessCopyWith<Key, Value, _$Success<Key, Value>> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$LoadingImplCopyWith<Key, Value, $Res> {
-  factory _$$LoadingImplCopyWith(_$LoadingImpl<Key, Value> value,
-          $Res Function(_$LoadingImpl<Key, Value>) then) =
-      __$$LoadingImplCopyWithImpl<Key, Value, $Res>;
+abstract class _$$LoadingCopyWith<Key, Value, $Res> {
+  factory _$$LoadingCopyWith(_$Loading<Key, Value> value,
+          $Res Function(_$Loading<Key, Value>) then) =
+      __$$LoadingCopyWithImpl<Key, Value, $Res>;
 }
 
 /// @nodoc
-class __$$LoadingImplCopyWithImpl<Key, Value, $Res>
-    extends _$PagedValueCopyWithImpl<Key, Value, $Res,
-        _$LoadingImpl<Key, Value>>
-    implements _$$LoadingImplCopyWith<Key, Value, $Res> {
-  __$$LoadingImplCopyWithImpl(_$LoadingImpl<Key, Value> _value,
-      $Res Function(_$LoadingImpl<Key, Value>) _then)
+class __$$LoadingCopyWithImpl<Key, Value, $Res>
+    extends _$PagedValueCopyWithImpl<Key, Value, $Res, _$Loading<Key, Value>>
+    implements _$$LoadingCopyWith<Key, Value, $Res> {
+  __$$LoadingCopyWithImpl(
+      _$Loading<Key, Value> _value, $Res Function(_$Loading<Key, Value>) _then)
       : super(_value, _then);
-
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
 
-class _$LoadingImpl<Key, Value> extends Loading<Key, Value>
+class _$Loading<Key, Value> extends Loading<Key, Value>
     with DiagnosticableTreeMixin {
-  const _$LoadingImpl() : super._();
+  const _$Loading() : super._();
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
@@ -341,10 +326,9 @@ class _$LoadingImpl<Key, Value> extends Loading<Key, Value>
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$LoadingImpl<Key, Value>);
+        (other.runtimeType == runtimeType && other is _$Loading<Key, Value>);
   }
 
   @override
@@ -426,35 +410,33 @@ class _$LoadingImpl<Key, Value> extends Loading<Key, Value>
 }
 
 abstract class Loading<Key, Value> extends PagedValue<Key, Value> {
-  const factory Loading() = _$LoadingImpl<Key, Value>;
+  const factory Loading() = _$Loading<Key, Value>;
   const Loading._() : super._();
 }
 
 /// @nodoc
-abstract class _$$ErrorImplCopyWith<Key, Value, $Res> {
-  factory _$$ErrorImplCopyWith(_$ErrorImpl<Key, Value> value,
-          $Res Function(_$ErrorImpl<Key, Value>) then) =
-      __$$ErrorImplCopyWithImpl<Key, Value, $Res>;
+abstract class _$$ErrorCopyWith<Key, Value, $Res> {
+  factory _$$ErrorCopyWith(
+          _$Error<Key, Value> value, $Res Function(_$Error<Key, Value>) then) =
+      __$$ErrorCopyWithImpl<Key, Value, $Res>;
   @useResult
   $Res call({StreamChatError error});
 }
 
 /// @nodoc
-class __$$ErrorImplCopyWithImpl<Key, Value, $Res>
-    extends _$PagedValueCopyWithImpl<Key, Value, $Res, _$ErrorImpl<Key, Value>>
-    implements _$$ErrorImplCopyWith<Key, Value, $Res> {
-  __$$ErrorImplCopyWithImpl(_$ErrorImpl<Key, Value> _value,
-      $Res Function(_$ErrorImpl<Key, Value>) _then)
+class __$$ErrorCopyWithImpl<Key, Value, $Res>
+    extends _$PagedValueCopyWithImpl<Key, Value, $Res, _$Error<Key, Value>>
+    implements _$$ErrorCopyWith<Key, Value, $Res> {
+  __$$ErrorCopyWithImpl(
+      _$Error<Key, Value> _value, $Res Function(_$Error<Key, Value>) _then)
       : super(_value, _then);
 
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? error = null,
   }) {
-    return _then(_$ErrorImpl<Key, Value>(
+    return _then(_$Error<Key, Value>(
       null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
@@ -465,9 +447,9 @@ class __$$ErrorImplCopyWithImpl<Key, Value, $Res>
 
 /// @nodoc
 
-class _$ErrorImpl<Key, Value> extends Error<Key, Value>
+class _$Error<Key, Value> extends Error<Key, Value>
     with DiagnosticableTreeMixin {
-  const _$ErrorImpl(this.error) : super._();
+  const _$Error(this.error) : super._();
 
   @override
   final StreamChatError error;
@@ -486,24 +468,21 @@ class _$ErrorImpl<Key, Value> extends Error<Key, Value>
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ErrorImpl<Key, Value> &&
+            other is _$Error<Key, Value> &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ErrorImplCopyWith<Key, Value, _$ErrorImpl<Key, Value>> get copyWith =>
-      __$$ErrorImplCopyWithImpl<Key, Value, _$ErrorImpl<Key, Value>>(
-          this, _$identity);
+  _$$ErrorCopyWith<Key, Value, _$Error<Key, Value>> get copyWith =>
+      __$$ErrorCopyWithImpl<Key, Value, _$Error<Key, Value>>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -581,14 +560,11 @@ class _$ErrorImpl<Key, Value> extends Error<Key, Value>
 }
 
 abstract class Error<Key, Value> extends PagedValue<Key, Value> {
-  const factory Error(final StreamChatError error) = _$ErrorImpl<Key, Value>;
+  const factory Error(final StreamChatError error) = _$Error<Key, Value>;
   const Error._() : super._();
 
   StreamChatError get error;
-
-  /// Create a copy of PagedValue
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ErrorImplCopyWith<Key, Value, _$ErrorImpl<Key, Value>> get copyWith =>
+  @JsonKey(ignore: true)
+  _$$ErrorCopyWith<Key, Value, _$Error<Key, Value>> get copyWith =>
       throw _privateConstructorUsedError;
 }

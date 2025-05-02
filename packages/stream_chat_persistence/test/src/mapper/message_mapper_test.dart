@@ -30,16 +30,6 @@ void main() {
         assetUrl: 'testAssetUrl',
       ),
     );
-    final poll = Poll(
-      id: 'testPollId',
-      name: 'testQuestion',
-      options: const [
-        PollOption(
-          id: 'testOptionId',
-          text: 'testOptionText',
-        ),
-      ],
-    );
     final entity = MessageEntity(
       id: 'testMessageId',
       attachments: attachments.map((it) => jsonEncode(it.toData())).toList(),
@@ -47,7 +37,6 @@ void main() {
       type: 'testType',
       parentId: 'testParentId',
       quotedMessageId: quotedMessage.id,
-      pollId: poll.id,
       command: 'testCommand',
       localCreatedAt: DateTime.now(),
       remoteCreatedAt: DateTime.now().add(const Duration(seconds: 1)),
@@ -81,7 +70,6 @@ void main() {
         'hi_text': 'नमस्ते',
         'language': 'en',
       },
-      restrictedVisibility: const ['user-id-2'],
     );
     final message = entity.toMessage(
       user: user,
@@ -89,7 +77,6 @@ void main() {
       latestReactions: reactions,
       ownReactions: reactions,
       quotedMessage: quotedMessage,
-      poll: poll,
     );
 
     expect(message, isA<Message>());
@@ -97,7 +84,6 @@ void main() {
     expect(message.type, entity.type);
     expect(message.parentId, entity.parentId);
     expect(message.quotedMessageId, entity.quotedMessageId);
-    expect(message.pollId, entity.pollId);
     expect(message.command, entity.command);
     expect(message.localCreatedAt, isSameDateAs(entity.localCreatedAt));
     expect(message.remoteCreatedAt, isSameDateAs(entity.remoteCreatedAt));
@@ -138,7 +124,6 @@ void main() {
       expect(messageAttachment.type, entityAttachment.type);
       expect(messageAttachment.assetUrl, entityAttachment.assetUrl);
     }
-    expect(message.restrictedVisibility, entity.restrictedVisibility);
   });
 
   test('toEntity should map message into MessageEntity', () {
@@ -163,23 +148,12 @@ void main() {
         assetUrl: 'testAssetUrl',
       ),
     );
-    final poll = Poll(
-      id: 'testPollId',
-      name: 'testQuestion',
-      options: const [
-        PollOption(
-          id: 'testOptionId',
-          text: 'testOptionText',
-        ),
-      ],
-    );
     final message = Message(
       id: 'testMessageId',
       attachments: attachments,
       type: 'testType',
       parentId: 'testParentId',
       quotedMessageId: quotedMessage.id,
-      pollId: poll.id,
       command: 'testCommand',
       localCreatedAt: DateTime.now(),
       createdAt: DateTime.now().add(const Duration(seconds: 1)),
@@ -212,7 +186,6 @@ void main() {
         'hi_text': 'नमस्ते',
         'language': 'en',
       },
-      restrictedVisibility: const ['user-id-2'],
     );
     final entity = message.toEntity(cid: cid);
     expect(entity, isA<MessageEntity>());
@@ -220,7 +193,6 @@ void main() {
     expect(entity.type, message.type);
     expect(entity.parentId, message.parentId);
     expect(entity.quotedMessageId, message.quotedMessageId);
-    expect(entity.pollId, message.pollId);
     expect(entity.command, message.command);
     expect(entity.localCreatedAt, isSameDateAs(message.localCreatedAt));
     expect(entity.remoteCreatedAt, isSameDateAs(message.remoteCreatedAt));
@@ -254,6 +226,5 @@ void main() {
       message.attachments.map((it) => jsonEncode(it.toData())).toList(),
     );
     expect(entity.i18n, message.i18n);
-    expect(entity.restrictedVisibility, message.restrictedVisibility);
   });
 }

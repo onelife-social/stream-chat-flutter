@@ -22,25 +22,24 @@ class DeleteMessageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = StreamChatTheme.of(context);
     return InkWell(
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
-            StreamSvgIcon(
-              icon: StreamSvgIcons.delete,
-              color: theme.colorTheme.accentError,
+            StreamSvgIcon.delete(
+              color: Colors.red,
             ),
             const SizedBox(width: 16),
             Text(
               context.translations.toggleDeleteRetryDeleteMessageText(
                 isDeleteFailed: isDeleteFailed,
               ),
-              style: theme.textTheme.body.copyWith(
-                color: theme.colorTheme.accentError,
-              ),
+              style: StreamChatTheme.of(context)
+                  .textTheme
+                  .body
+                  .copyWith(color: Colors.red),
             ),
           ],
         ),

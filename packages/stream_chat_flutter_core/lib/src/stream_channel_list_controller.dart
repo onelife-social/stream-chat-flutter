@@ -1,18 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:stream_chat/stream_chat.dart' hide Success;
 import 'package:stream_chat_flutter_core/src/paged_value_notifier.dart';
 import 'package:stream_chat_flutter_core/src/stream_channel_list_event_handler.dart';
 
 /// The default channel page limit to load.
 const defaultChannelPagedLimit = 10;
-
-/// The default sort used for the channel list.
-const defaultChannelListSort = [
-  SortOption<ChannelState>(ChannelSortKey.lastUpdated),
-];
 
 const _kDefaultBackendPaginationLimit = 30;
 
@@ -50,7 +44,7 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
     required this.client,
     StreamChannelListEventHandler? eventHandler,
     this.filter,
-    this.channelStateSort = defaultChannelListSort,
+    this.channelStateSort,
     this.presence = true,
     this.limit = defaultChannelPagedLimit,
     this.messageLimit,
@@ -64,7 +58,7 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
     required this.client,
     StreamChannelListEventHandler? eventHandler,
     this.filter,
-    this.channelStateSort = defaultChannelListSort,
+    this.channelStateSort,
     this.presence = true,
     this.limit = defaultChannelPagedLimit,
     this.messageLimit,
@@ -93,7 +87,7 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
   /// created_at or member_count.
   ///
   /// Direction can be ascending or descending.
-  final SortOrder<ChannelState>? channelStateSort;
+  final List<SortOption<ChannelState>>? channelStateSort;
 
   /// If true you’ll receive user presence updates via the websocket events
   final bool presence;
@@ -107,22 +101,6 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
 
   /// Number of members to fetch in each channel.
   final int? memberLimit;
-
-  @override
-  set value(PagedValue<int, Channel> newValue) {
-    super.value = switch (channelStateSort) {
-      null => newValue,
-      final channelSort => newValue.maybeMap(
-          orElse: () => newValue,
-          (success) => success.copyWith(
-            items: success.items.sortedByCompare(
-              (it) => it.state!.channelState,
-              channelSort.compare,
-            ),
-          ),
-        ),
-    };
-  }
 
   @override
   Future<void> doInitialLoad() async {
@@ -241,7 +219,11 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
       _unsubscribeFromChannelListEvents();
     }
 
-    _channelEventSubscription = client.on().listen((event) {
+    _channelEventSubscription = client
+        .on()
+        .skip(1) // Skipping the last emitted event.
+        // We only need to handle the latest events.
+        .listen((event) {
       // Only handle the event if the value is in success state.
       if (value.isNotSuccess) return;
 
@@ -272,8 +254,6 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
       } else if (eventType == 'user.presence.changed' ||
           eventType == EventType.userUpdated) {
         _eventHandler.onUserPresenceChanged(event, this);
-      } else if (eventType == EventType.memberUpdated) {
-        _eventHandler.onMemberUpdated(event, this);
       }
     });
   }

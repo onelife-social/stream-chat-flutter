@@ -25,8 +25,7 @@ class FlagMessageButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
-            StreamSvgIcon(
-              icon: StreamSvgIcons.flag,
+            StreamSvgIcon.iconFlag(
               color: streamChatThemeData.primaryIconTheme.color,
             ),
             const SizedBox(width: 16),

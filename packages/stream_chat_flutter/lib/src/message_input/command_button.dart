@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/icons/stream_svg_icon.dart';
-import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
+import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
+
+const double _kDefaultCommandButtonSize = 24;
 
 /// {@template commandButton}
 /// The button that allows a user to use commands in a chat.
@@ -12,8 +13,12 @@ class CommandButton extends StatelessWidget {
     required this.onPressed,
     this.color,
     this.icon,
-    this.size = kDefaultMessageInputIconSize,
-  });
+    this.size = _kDefaultCommandButtonSize,
+  }) : assert(
+            (icon == null && color == null) ||
+                (icon != null && color == null) ||
+                (icon == null && color != null),
+            'Either icon or color should be provided');
 
   /// The color of the button.
   /// Should be set if no [icon] is provided.
@@ -49,11 +54,18 @@ class CommandButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamMessageInputIconButton(
-      color: color,
-      iconSize: size,
+    return IconButton(
+      icon: icon ??
+          StreamSvgIcon.lightning(
+            color: color,
+          ),
+      padding: EdgeInsets.zero,
+      constraints: BoxConstraints.tightFor(
+        height: size,
+        width: size,
+      ),
+      splashRadius: size,
       onPressed: onPressed,
-      icon: icon ?? const StreamSvgIcon(icon: StreamSvgIcons.lightning),
     );
   }
 }

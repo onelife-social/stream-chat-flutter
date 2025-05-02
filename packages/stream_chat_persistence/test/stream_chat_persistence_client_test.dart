@@ -220,17 +220,6 @@ void main() {
         ),
       );
       final channel = ChannelModel(cid: cid);
-      final draft = Draft(
-        channelCid: cid,
-        createdAt: DateTime.now(),
-        message: DraftMessage(
-          id: 'testDraftId',
-          text: 'Test draft message',
-        ),
-      );
-
-      when(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
-          .thenAnswer((_) async => draft);
 
       when(() => mockDatabase.memberDao.getMembersByCid(cid))
           .thenAnswer((_) async => members);
@@ -242,8 +231,6 @@ void main() {
           .thenAnswer((_) async => messages);
       when(() => mockDatabase.pinnedMessageDao.getMessagesByCid(cid))
           .thenAnswer((_) async => messages);
-      when(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
-          .thenAnswer((_) async => draft);
 
       final fetchedChannelState = await client.getChannelStateByCid(cid);
       expect(fetchedChannelState.messages?.length, messages.length);
@@ -251,7 +238,6 @@ void main() {
       expect(fetchedChannelState.members?.length, members.length);
       expect(fetchedChannelState.read?.length, reads.length);
       expect(fetchedChannelState.channel!.cid, channel.cid);
-      expect(fetchedChannelState.draft?.message.id, draft.message.id);
 
       verify(() => mockDatabase.memberDao.getMembersByCid(cid)).called(1);
       verify(() => mockDatabase.readDao.getReadsByCid(cid)).called(1);
@@ -259,11 +245,23 @@ void main() {
       verify(() => mockDatabase.messageDao.getMessagesByCid(cid)).called(1);
       verify(() => mockDatabase.pinnedMessageDao.getMessagesByCid(cid))
           .called(1);
-      verify(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
-          .called(1);
     });
 
     group('getChannelState', () {
+      test('should throw if sort is provided without comparator', () async {
+        final sort = [
+          const SortOption<ChannelState>(
+            'testField',
+            direction: SortOption.ASC,
+          ),
+        ];
+
+        expect(
+          () => client.getChannelStates(channelStateSort: sort),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
       test('should work fine', () async {
         const cid = 'testType:testId';
         final channels = List.generate(3, (index) => ChannelModel(cid: cid));
@@ -491,48 +489,6 @@ void main() {
       verify(() => mockDatabase.channelDao.updateChannels(channels)).called(1);
     });
 
-    test('updatePolls', () async {
-      const name = 'testPollName';
-      final options = List.generate(3, (index) => PollOption(text: '$index'));
-      final polls =
-          List.generate(3, (index) => Poll(name: name, options: options));
-      when(() => mockDatabase.pollDao.updatePolls(polls))
-          .thenAnswer((_) => Future.value());
-
-      await client.updatePolls(polls);
-      verify(() => mockDatabase.pollDao.updatePolls(polls)).called(1);
-    });
-
-    test('deletePollsByIds', () async {
-      final pollIds = <String>['testPollId'];
-      when(() => mockDatabase.pollDao.deletePollsByIds(pollIds))
-          .thenAnswer((_) => Future.value());
-
-      await client.deletePollsByIds(pollIds);
-      verify(() => mockDatabase.pollDao.deletePollsByIds(pollIds)).called(1);
-    });
-
-    test('updatePollVotes', () async {
-      final pollVotes = List.generate(
-          3, (index) => PollVote(id: '$index', optionId: 'testOptionId$index'));
-      when(() => mockDatabase.pollVoteDao.updatePollVotes(pollVotes))
-          .thenAnswer((_) => Future.value());
-
-      await client.updatePollVotes(pollVotes);
-      verify(() => mockDatabase.pollVoteDao.updatePollVotes(pollVotes))
-          .called(1);
-    });
-
-    test('deletePollVotesByPollIds', () async {
-      final pollIds = <String>['testPollId'];
-      when(() => mockDatabase.pollVoteDao.deletePollVotesByPollIds(pollIds))
-          .thenAnswer((_) => Future.value());
-
-      await client.deletePollVotesByPollIds(pollIds);
-      verify(() => mockDatabase.pollVoteDao.deletePollVotesByPollIds(pollIds))
-          .called(1);
-    });
-
     test('updateMembers', () async {
       const cid = 'testCid';
       final members = List.generate(3, (index) => Member());
@@ -629,64 +585,6 @@ void main() {
 
       await client.deleteMembersByCids(cids);
       verify(() => mockDatabase.memberDao.deleteMemberByCids(cids)).called(1);
-    });
-
-    test('getDraftMessageByCid', () async {
-      const cid = 'testCid';
-      const parentId = 'testParentId';
-      final draft = Draft(
-        channelCid: cid,
-        parentId: parentId,
-        createdAt: DateTime.now(),
-        message: DraftMessage(
-          id: 'testDraftId',
-          text: 'Test draft message',
-        ),
-      );
-
-      when(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
-          .thenAnswer((_) async => draft);
-
-      final fetchedDraft = await client.getDraftMessageByCid(cid);
-      expect(fetchedDraft, isNotNull);
-      expect(fetchedDraft!.channelCid, cid);
-      expect(fetchedDraft.message.id, draft.message.id);
-      expect(fetchedDraft.message.text, draft.message.text);
-      verify(() => mockDatabase.draftMessageDao.getDraftMessageByCid(cid))
-          .called(1);
-    });
-
-    test('updateDraftMessages', () async {
-      final drafts = List.generate(
-        3,
-        (index) => Draft(
-          channelCid: 'testCid',
-          createdAt: DateTime.now(),
-          message: DraftMessage(
-            id: 'testDraftId$index',
-            text: 'Test draft message $index',
-          ),
-        ),
-      );
-
-      when(() => mockDatabase.draftMessageDao.updateDraftMessages(drafts))
-          .thenAnswer((_) async {});
-
-      await client.updateDraftMessages(drafts);
-      verify(() => mockDatabase.draftMessageDao.updateDraftMessages(drafts))
-          .called(1);
-    });
-
-    test('deleteDraftMessageByCid', () async {
-      const cid = 'testCid';
-      const parentId = 'testParentId';
-
-      when(() => mockDatabase.draftMessageDao.deleteDraftMessageByCid(cid,
-          parentId: parentId)).thenAnswer((_) async {});
-
-      await client.deleteDraftMessageByCid(cid, parentId: parentId);
-      verify(() => mockDatabase.draftMessageDao
-          .deleteDraftMessageByCid(cid, parentId: parentId)).called(1);
     });
 
     tearDown(() async {

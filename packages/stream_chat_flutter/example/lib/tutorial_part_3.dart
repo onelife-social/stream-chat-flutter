@@ -146,7 +146,6 @@ class _ChannelListPageState extends State<ChannelListPage> {
               color: StreamChatTheme.of(context)
                   .colorTheme
                   .textHighEmphasis
-                  // ignore: deprecated_member_use
                   .withOpacity(opacity),
             ),
         channel: channel,

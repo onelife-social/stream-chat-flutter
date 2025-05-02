@@ -322,9 +322,8 @@ class StreamMemberListView extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: StreamScrollViewEmptyWidget(
-                    emptyIcon: StreamSvgIcon(
+                    emptyIcon: StreamSvgIcon.user(
                       size: 148,
-                      icon: StreamSvgIcons.user,
                       color: chatThemeData.colorTheme.disabled,
                     ),
                     emptyTitle: Text(

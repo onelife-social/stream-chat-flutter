@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/misc/timestamp.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// A widget that displays a message search item.
@@ -223,8 +222,18 @@ class MessageSearchTileMessageDate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final createdAt = message.createdAt;
-    return StreamTimestamp(
-      date: createdAt.toLocal(),
+    String stringDate;
+    final now = DateTime.now();
+    if (now.year != createdAt.year ||
+        now.month != createdAt.month ||
+        now.day != createdAt.day) {
+      stringDate = Jiffy.parseFromDateTime(createdAt.toLocal()).yMd;
+    } else {
+      stringDate = Jiffy.parseFromDateTime(createdAt.toLocal()).jm;
+    }
+
+    return Text(
+      stringDate,
       style: textStyle,
     );
   }

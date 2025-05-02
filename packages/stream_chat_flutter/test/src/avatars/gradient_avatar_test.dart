@@ -1,6 +1,6 @@
-import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -39,77 +39,92 @@ void main() {
     },
   );
 
-  goldenTest(
+  testGoldens(
     'golden test for the name "demo user"',
-    fileName: 'gradient_avatar_0',
-    constraints: const BoxConstraints.tightFor(width: 300, height: 300),
-    builder: () => MaterialAppWrapper(
-      home: const Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: StreamGradientAvatar(name: 'demo user', userId: 'demo123'),
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialAppWrapper(
+          home: const Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child:
+                    StreamGradientAvatar(name: 'demo user', userId: 'demo123'),
+              ),
+            ),
           ),
         ),
-      ),
-    ),
+      );
+
+      await screenMatchesGolden(tester, 'gradient_avatar_0');
+    },
   );
 
-  goldenTest(
+  testGoldens(
     'golden test for the name "demo"',
-    fileName: 'gradient_avatar_1',
-    constraints: const BoxConstraints.tightFor(width: 300, height: 300),
-    builder: () => MaterialAppWrapper(
-      home: const Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: StreamGradientAvatar(name: 'demo', userId: 'demo1'),
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialAppWrapper(
+          home: const Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: StreamGradientAvatar(name: 'demo', userId: 'demo1'),
+              ),
+            ),
           ),
         ),
-      ),
-    ),
+      );
+
+      await screenMatchesGolden(tester, 'gradient_avatar_1');
+    },
   );
 
-  goldenTest(
+  testGoldens(
     'control special character test',
-    fileName: 'gradient_avatar_2',
-    constraints: const BoxConstraints.tightFor(width: 300, height: 300),
-    builder: () => MaterialAppWrapper(
-      home: const Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: StreamGradientAvatar(
-              name: r'd123@/d de:$as',
-              userId: 'demo123',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialAppWrapper(
+          home: const Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: StreamGradientAvatar(
+                  name: r'd123@/d de:$as',
+                  userId: 'demo123',
+                ),
+              ),
             ),
           ),
         ),
-      ),
-    ),
+      );
+
+      await screenMatchesGolden(tester, 'gradient_avatar_2');
+    },
   );
 
-  goldenTest(
+  testGoldens(
     'control special character test 2',
-    fileName: 'gradient_avatar_3',
-    constraints: const BoxConstraints.tightFor(width: 300, height: 300),
-    builder: () => MaterialAppWrapper(
-      home: const Scaffold(
-        body: Center(
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: StreamGradientAvatar(
-              name: r'123@/d $as',
-              userId: 'demo123',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialAppWrapper(
+          home: const Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 100,
+                height: 100,
+                child: StreamGradientAvatar(
+                    name: r'123@/d $as', userId: 'demo123'),
+              ),
             ),
           ),
         ),
-      ),
-    ),
+      );
+
+      await screenMatchesGolden(tester, 'gradient_avatar_3');
+    },
   );
 }

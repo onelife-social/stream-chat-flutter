@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/src/utils/extensions.dart';
 
 /// {@template aiTypingIndicatorView}
 /// A widget that displays a typing indicator for the AI.
@@ -112,7 +113,6 @@ class AnimatedDots extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      spacing: 4,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ...List.generate(
@@ -124,7 +124,7 @@ class AnimatedDots extends StatelessWidget {
             color: color,
           ),
         ),
-      ],
+      ].insertBetween(const SizedBox(width: 4)),
     );
   }
 }

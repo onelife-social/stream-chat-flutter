@@ -1,12 +1,6 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
-// To regenerate, run: dart tools/generate_version.dart
-
-// **************************************************************************
-// VersionGenerator
-// **************************************************************************
-
-// ignore_for_file: constant_identifier_names
+import 'package:stream_chat/src/client/client.dart';
 
 /// Current package version
-/// Used in [SystemEnvironmentManager] to build the `x-stream-client` header
-const PACKAGE_VERSION = '9.8.0';
+/// Used in [StreamChatClient] to build the `x-stream-client` header
+// ignore: constant_identifier_names
+const PACKAGE_VERSION = '8.3.0';

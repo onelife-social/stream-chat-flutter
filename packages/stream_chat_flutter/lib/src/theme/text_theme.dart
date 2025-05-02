@@ -8,32 +8,27 @@ class StreamTextTheme {
   StreamTextTheme.light({
     this.title = const TextStyle(
       fontSize: 22,
-      fontWeight: FontWeight.w500,
-      color: Colors.black,
-    ),
-    this.headline = const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
     this.headlineBold = const TextStyle(
       fontSize: 16,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
-    this.body = const TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
+    this.headline = const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
       color: Colors.black,
     ),
     this.bodyBold = const TextStyle(
       fontSize: 14,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
-    this.footnote = const TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
+    this.body = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
       color: Colors.black,
     ),
     this.footnoteBold = const TextStyle(
@@ -41,9 +36,13 @@ class StreamTextTheme {
       fontWeight: FontWeight.w500,
       color: Colors.black,
     ),
+    this.footnote = const TextStyle(
+      fontSize: 12,
+      color: Colors.black,
+    ),
     this.captionBold = const TextStyle(
       fontSize: 10,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.bold,
       color: Colors.black,
     ),
   });
@@ -52,32 +51,27 @@ class StreamTextTheme {
   StreamTextTheme.dark({
     this.title = const TextStyle(
       fontSize: 22,
-      fontWeight: FontWeight.w500,
-      color: Colors.white,
-    ),
-    this.headline = const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
     this.headlineBold = const TextStyle(
       fontSize: 16,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
-    this.body = const TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
+    this.headline = const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
       color: Colors.white,
     ),
     this.bodyBold = const TextStyle(
       fontSize: 14,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
-    this.footnote = const TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
+    this.body = const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
       color: Colors.white,
     ),
     this.footnoteBold = const TextStyle(
@@ -85,9 +79,13 @@ class StreamTextTheme {
       fontWeight: FontWeight.w500,
       color: Colors.white,
     ),
+    this.footnote = const TextStyle(
+      fontSize: 12,
+      color: Colors.white,
+    ),
     this.captionBold = const TextStyle(
       fontSize: 10,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
   });

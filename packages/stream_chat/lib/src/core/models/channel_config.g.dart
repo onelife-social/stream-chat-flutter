@@ -27,12 +27,9 @@ ChannelConfig _$ChannelConfigFromJson(Map<String, dynamic> json) =>
       readEvents: json['read_events'] as bool? ?? false,
       replies: json['replies'] as bool? ?? false,
       search: json['search'] as bool? ?? false,
-      polls: json['polls'] as bool? ?? false,
       typingEvents: json['typing_events'] as bool? ?? false,
       uploads: json['uploads'] as bool? ?? false,
       urlEnrichment: json['url_enrichment'] as bool? ?? false,
-      skipLastMsgUpdateForSystemMsgs:
-          json['skip_last_msg_update_for_system_msgs'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ChannelConfigToJson(ChannelConfig instance) =>
@@ -49,10 +46,7 @@ Map<String, dynamic> _$ChannelConfigToJson(ChannelConfig instance) =>
       'read_events': instance.readEvents,
       'replies': instance.replies,
       'search': instance.search,
-      'polls': instance.polls,
       'typing_events': instance.typingEvents,
       'uploads': instance.uploads,
       'url_enrichment': instance.urlEnrichment,
-      'skip_last_msg_update_for_system_msgs':
-          instance.skipLastMsgUpdateForSystemMsgs,
     };

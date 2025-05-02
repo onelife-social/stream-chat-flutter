@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamAttachmentUploadStateBuilder}
@@ -38,7 +37,7 @@ class StreamAttachmentUploadStateBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (message.state.isCompleted) {
-      return const Empty();
+      return const Offstage();
     }
 
     final messageId = message.id;
@@ -121,8 +120,7 @@ class _PreparingState extends StatelessWidget {
         Align(
           alignment: Alignment.topRight,
           child: _IconButton(
-            icon: StreamSvgIcon(
-              icon: StreamSvgIcons.close,
+            icon: StreamSvgIcon.close(
               color: StreamChatTheme.of(context).colorTheme.barsBg,
             ),
             onPressed: () => channel.cancelAttachmentUpload(attachmentId),
@@ -161,8 +159,7 @@ class _InProgressState extends StatelessWidget {
         Align(
           alignment: Alignment.topRight,
           child: _IconButton(
-            icon: StreamSvgIcon(
-              icon: StreamSvgIcons.close,
+            icon: StreamSvgIcon.close(
               color: StreamChatTheme.of(context).colorTheme.barsBg,
             ),
             onPressed: () => channel.cancelAttachmentUpload(attachmentId),
@@ -200,9 +197,8 @@ class _FailedState extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _IconButton(
-          icon: StreamSvgIcon(
+          icon: StreamSvgIcon.retry(
             size: 14,
-            icon: StreamSvgIcons.retry,
             color: theme.colorTheme.barsBg,
           ),
           onPressed: () {
@@ -213,7 +209,6 @@ class _FailedState extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
-              // ignore: deprecated_member_use
               color: theme.colorTheme.overlayDark.withOpacity(0.6),
             ),
             child: Padding(
@@ -244,8 +239,7 @@ class _SuccessState extends StatelessWidget {
       child: CircleAvatar(
         backgroundColor: StreamChatTheme.of(context).colorTheme.overlayDark,
         maxRadius: 12,
-        child: StreamSvgIcon(
-          icon: StreamSvgIcons.check,
+        child: StreamSvgIcon.check(
           color: StreamChatTheme.of(context).colorTheme.barsBg,
         ),
       ),

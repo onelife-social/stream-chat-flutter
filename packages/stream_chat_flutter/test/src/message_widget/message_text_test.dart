@@ -1,7 +1,7 @@
-import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -76,9 +76,6 @@ void main() {
         ),
       ));
 
-      // wait for the initial state to be rendered.
-      await tester.pumpAndSettle();
-
       expect(find.byType(MarkdownBody), findsOneWidget);
     },
   );
@@ -136,9 +133,6 @@ void main() {
           ),
         );
 
-        // wait for the initial state to be rendered.
-        await tester.pump(Duration.zero);
-
         expect(find.byType(MarkdownBody), findsOneWidget);
 
         final widgets = tester.allWidgets;
@@ -175,9 +169,6 @@ void main() {
           ),
         );
 
-        // wait for the initial state to be rendered.
-        await tester.pump(Duration.zero);
-
         expect(find.byType(MarkdownBody), findsOneWidget);
 
         final widgets = tester.allWidgets;
@@ -186,11 +177,9 @@ void main() {
     );
   });
 
-  goldenTest(
+  testGoldens(
     'control test',
-    fileName: 'message_text',
-    constraints: const BoxConstraints.tightFor(width: 300, height: 200),
-    builder: () {
+    (WidgetTester tester) async {
       final currentUser = OwnUser(id: 'user-id');
       final client = MockClient();
       final clientState = MockClientState();
@@ -227,8 +216,9 @@ and a list:
 
 cool.''';
 
-      return MaterialAppWrapper(
-        home: SimpleFrame(
+      await tester.pumpWidgetBuilder(
+        MaterialAppWrapper(
+            home: SimpleFrame(
           child: StreamChat(
             client: client,
             connectivityStream: Stream.value([ConnectivityResult.wifi]),
@@ -244,8 +234,10 @@ cool.''';
               ),
             ),
           ),
-        ),
+        )),
+        surfaceSize: const Size(500, 500),
       );
+      await screenMatchesGolden(tester, 'message_text');
     },
   );
 }

@@ -1,11 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:stream_chat/src/core/models/attachment.dart';
-import 'package:stream_chat/src/core/models/comparable_field.dart';
-import 'package:stream_chat/src/core/models/draft.dart';
 import 'package:stream_chat/src/core/models/message_state.dart';
-import 'package:stream_chat/src/core/models/moderation.dart';
-import 'package:stream_chat/src/core/models/poll.dart';
 import 'package:stream_chat/src/core/models/reaction.dart';
 import 'package:stream_chat/src/core/models/user.dart';
 import 'package:stream_chat/src/core/util/serializer.dart';
@@ -21,12 +17,12 @@ const _nullConst = _NullConst();
 
 /// The class that contains the information about a message.
 @JsonSerializable()
-class Message extends Equatable implements ComparableFieldProvider {
+class Message extends Equatable {
   /// Constructor used for json serialization.
   Message({
     String? id,
     this.text,
-    String type = MessageType.regular,
+    this.type = 'regular',
     this.attachments = const [],
     this.mentionedUsers = const [],
     this.silent = false,
@@ -54,22 +50,15 @@ class Message extends Equatable implements ComparableFieldProvider {
     this.pinnedAt,
     DateTime? pinExpires,
     this.pinnedBy,
-    this.poll,
-    String? pollId,
     this.extraData = const {},
     this.state = const MessageState.initial(),
     this.i18n,
-    this.restrictedVisibility,
-    this.moderation,
-    this.draft,
   })  : id = id ?? const Uuid().v4(),
-        type = MessageType(type),
         pinExpires = pinExpires?.toUtc(),
         remoteCreatedAt = createdAt,
         remoteUpdatedAt = updatedAt,
         remoteDeletedAt = deletedAt,
-        _quotedMessageId = quotedMessageId,
-        _pollId = pollId;
+        _quotedMessageId = quotedMessageId;
 
   /// Create a new instance from JSON.
   factory Message.fromJson(Map<String, dynamic> json) {
@@ -99,12 +88,15 @@ class Message extends Equatable implements ComparableFieldProvider {
   final MessageState state;
 
   /// The message type.
-  @JsonKey(
-    includeIfNull: false,
-    toJson: MessageType.toJson,
-    fromJson: MessageType.fromJson,
-  )
-  final MessageType type;
+  @JsonKey(includeIfNull: false, toJson: _typeToJson)
+  final String type;
+
+  // We need to skip passing type if it's not regular or system as the API
+  // does not expect it.
+  static String? _typeToJson(String type) {
+    if (['regular', 'system'].contains(type)) return type;
+    return null;
+  }
 
   /// The list of attachments, either provided by the user or generated from a
   /// command or as a result of URL scraping.
@@ -170,7 +162,7 @@ class Message extends Equatable implements ComparableFieldProvider {
   /// Returns the latest between [localCreatedAt] and [remoteCreatedAt].
   /// If both are null, returns [DateTime.now].
   @JsonKey(includeToJson: false)
-  DateTime get createdAt => remoteCreatedAt ?? localCreatedAt ?? DateTime.now();
+  DateTime get createdAt => localCreatedAt ?? remoteCreatedAt ?? DateTime.now();
 
   /// Indicates when the message was created locally.
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -185,7 +177,7 @@ class Message extends Equatable implements ComparableFieldProvider {
   /// Returns the latest between [localUpdatedAt] and [remoteUpdatedAt].
   /// If both are null, returns [createdAt].
   @JsonKey(includeToJson: false)
-  DateTime get updatedAt => remoteUpdatedAt ?? localUpdatedAt ?? createdAt;
+  DateTime get updatedAt => localUpdatedAt ?? remoteUpdatedAt ?? createdAt;
 
   /// Indicates when the message was updated locally.
   @JsonKey(includeToJson: false, includeFromJson: false)
@@ -199,7 +191,7 @@ class Message extends Equatable implements ComparableFieldProvider {
   ///
   /// Returns the latest between [localDeletedAt] and [remoteDeletedAt].
   @JsonKey(includeToJson: false)
-  DateTime? get deletedAt => remoteDeletedAt ?? localDeletedAt;
+  DateTime? get deletedAt => localDeletedAt ?? remoteDeletedAt;
 
   /// Reserved field indicating when the message text was edited.
   @JsonKey(includeToJson: false)
@@ -233,39 +225,20 @@ class Message extends Equatable implements ComparableFieldProvider {
   @JsonKey(includeToJson: false)
   final User? pinnedBy;
 
-  /// The poll associated with this message.
-  @JsonKey(includeToJson: false)
-  final Poll? poll;
-
-  /// The ID of the [poll] associated with this message.
-  String? get pollId => _pollId ?? poll?.id;
-  final String? _pollId;
-
-  /// The list of user ids that should be able to see the message.
-  ///
-  /// If null or empty, the message is visible to all users.
-  /// If populated, only users whose ids are included in this list can see
-  /// the message.
-  @JsonKey(includeIfNull: false)
-  final List<String>? restrictedVisibility;
-
-  static Object? _moderationReadValue(Map<Object?, Object?> json, String key) {
-    // For backward compatibility, we fallback to 'moderation_details' key
-    // if 'moderation' key is not present.
-    return json[key] ?? json['moderation_details'];
-  }
-
-  /// The moderation details for this message.
-  @JsonKey(includeToJson: false, readValue: _moderationReadValue)
-  final Moderation? moderation;
-
-  /// Optional draft message linked to this message.
-  ///
-  /// This is present when the message is a thread i.e. contains replies.
-  final Draft? draft;
-
   /// Message custom extraData.
   final Map<String, Object?> extraData;
+
+  /// True if the message is a error.
+  bool get isError => type == 'error';
+
+  /// True if the message is a system info.
+  bool get isSystem => type == 'system';
+
+  /// True if the message has been deleted.
+  bool get isDeleted => type == 'deleted';
+
+  /// True if the message is ephemeral.
+  bool get isEphemeral => type == 'ephemeral';
 
   /// A Map of translations.
   @JsonKey(includeToJson: false)
@@ -304,29 +277,12 @@ class Message extends Equatable implements ComparableFieldProvider {
     'pin_expires',
     'pinned_by',
     'i18n',
-    'poll',
-    'poll_id',
-    'restricted_visibility',
-    'moderation',
-    'moderation_details',
-    'draft',
   ];
 
   /// Serialize to json.
-  Map<String, dynamic> toJson() {
-    final message = removeMentionsIfNotIncluded();
-    final json = Serializer.moveFromExtraDataToRoot(
-      _$MessageToJson(message),
-    );
-
-    // If the message contains command we should append it to the text
-    // before sending it.
-    if (command case final command? when command.isNotEmpty) {
-      json.update('text', (text) => '/$command $text', ifAbsent: () => null);
-    }
-
-    return json;
-  }
+  Map<String, dynamic> toJson() => Serializer.moveFromExtraDataToRoot(
+        _$MessageToJson(this),
+      );
 
   /// Creates a copy of [Message] with specified attributes overridden.
   Message copyWith({
@@ -360,14 +316,9 @@ class Message extends Equatable implements ComparableFieldProvider {
     DateTime? pinnedAt,
     Object? pinExpires = _nullConst,
     User? pinnedBy,
-    Poll? poll,
-    String? pollId,
     Map<String, Object?>? extraData,
     MessageState? state,
     Map<String, String>? i18n,
-    List<String>? restrictedVisibility,
-    Moderation? moderation,
-    Object? draft = _nullConst,
   }) {
     assert(() {
       if (pinExpires is! DateTime &&
@@ -436,14 +387,9 @@ class Message extends Equatable implements ComparableFieldProvider {
       pinExpires:
           pinExpires == _nullConst ? this.pinExpires : pinExpires as DateTime?,
       pinnedBy: pinnedBy ?? this.pinnedBy,
-      poll: poll ?? this.poll,
-      pollId: pollId ?? _pollId,
       extraData: extraData ?? this.extraData,
       state: state ?? this.state,
       i18n: i18n ?? this.i18n,
-      restrictedVisibility: restrictedVisibility ?? this.restrictedVisibility,
-      moderation: moderation ?? this.moderation,
-      draft: draft == _nullConst ? this.draft : draft as Draft?,
     );
   }
 
@@ -481,14 +427,9 @@ class Message extends Equatable implements ComparableFieldProvider {
       pinnedAt: other.pinnedAt,
       pinExpires: other.pinExpires,
       pinnedBy: other.pinnedBy,
-      poll: other.poll,
-      pollId: other.pollId,
       extraData: other.extraData,
       state: other.state,
       i18n: other.i18n,
-      restrictedVisibility: other.restrictedVisibility,
-      moderation: other.moderation,
-      draft: other.draft,
     );
   }
 
@@ -546,204 +487,8 @@ class Message extends Equatable implements ComparableFieldProvider {
         pinnedAt,
         pinExpires,
         pinnedBy,
-        poll,
-        pollId,
         extraData,
         state,
         i18n,
-        restrictedVisibility,
-        moderation,
-        draft,
       ];
-
-  @override
-  ComparableField? getComparableField(String sortKey) {
-    final value = switch (sortKey) {
-      MessageSortKey.id => id,
-      MessageSortKey.createdAt => createdAt,
-      MessageSortKey.updatedAt => updatedAt,
-      _ => extraData[sortKey],
-    };
-
-    return ComparableField.fromValue(value);
-  }
-}
-
-/// Extension type representing sortable fields for [Message].
-///
-/// This type provides type-safe keys that can be used for sorting messages
-/// in queries. Each constant represents a field that can be sorted on.
-extension type const MessageSortKey(String key) implements String {
-  /// Sort messages by their unique ID.
-  static const id = MessageSortKey('id');
-
-  /// Sort messages by their creation date.
-  ///
-  /// This is the default sort field (in descending order).
-  static const createdAt = MessageSortKey('created_at');
-
-  /// Sort messages by their last update date.
-  static const updatedAt = MessageSortKey('updated_at');
-}
-
-/// {@template messageType}
-/// A type of the message that determines how the message is displayed and
-/// handled by the system.
-/// {@endtemplate}
-extension type const MessageType(String rawType) implements String {
-  /// A regular message created in the channel.
-  static const regular = MessageType('regular');
-
-  /// A temporary message which is only delivered to one user and not stored in
-  /// the channel history.
-  ///
-  /// Ephemeral messages are normally used by commands (e.g. /giphy) to prompt
-  /// messages or request for actions.
-  static const ephemeral = MessageType('ephemeral');
-
-  /// An error message generated as a result of a failed command.
-  static const error = MessageType('error');
-
-  /// The message is a reply to another message.
-  static const reply = MessageType('reply');
-
-  /// A message generated by a system event.
-  static const system = MessageType('system');
-
-  /// A deleted message.
-  static const deleted = MessageType('deleted');
-
-  /// Create a new instance from a json string.
-  static MessageType fromJson(String rawType) => MessageType(rawType);
-
-  /// Serialize to json string.
-  static String? toJson(String type) {
-    // We need to skip passing type if it's not regular or system as the API
-    // does not expect it.
-    if ([MessageType.regular, MessageType.system].contains(type)) {
-      return type;
-    }
-
-    return null;
-  }
-}
-
-/// Extension that adds message type functionality to Message objects.
-///
-/// This extension provides methods to determine the type of a message based on
-/// the [Message.type] field.
-extension MessageTypeHelper on Message {
-  /// True if the message is a regular message.
-  bool get isRegular => type == MessageType.regular;
-
-  /// True if the message is ephemeral.
-  bool get isEphemeral => type == MessageType.ephemeral;
-
-  /// True if the message is a error.
-  bool get isError => type == MessageType.error;
-
-  /// True if the message is a reply to another message.
-  bool get isReply => type == MessageType.reply;
-
-  /// True if the message is a system info.
-  bool get isSystem => type == MessageType.system;
-
-  /// True if the message has been deleted.
-  bool get isDeleted => type == MessageType.deleted;
-}
-
-/// Extension that adds visibility control functionality to Message objects.
-///
-/// This extension provides methods to determine if a message is visible to a
-/// specific user based on the [Message.restrictedVisibility] list.
-extension MessageVisibility on Message {
-  /// Checks if this message has any visibility restrictions applied.
-  ///
-  /// Returns true if the restrictedVisibility list exists and contains at
-  /// least one entry, indicating that visibility of this message is restricted
-  /// to specific users.
-  ///
-  /// Returns false if the restrictedVisibility list is null or empty,
-  /// indicating that this message is visible to all users.
-  bool get hasRestrictedVisibility {
-    final visibility = restrictedVisibility;
-    if (visibility == null || visibility.isEmpty) return false;
-
-    return true;
-  }
-
-  /// Determines if a message is visible to a specific user based on
-  /// restricted visibility settings.
-  ///
-  /// Returns true in the following cases:
-  /// - The restrictedVisibility list is null or empty (visible to everyone)
-  /// - The provided userId is found in the restrictedVisibility list
-  ///
-  /// Returns false if the restrictedVisibility list exists and doesn't
-  /// contain the provided userId.
-  ///
-  /// [userId] The unique identifier of the user to check visibility for.
-  bool isVisibleTo(String userId) {
-    final visibility = restrictedVisibility;
-    if (visibility == null || visibility.isEmpty) return true;
-
-    return visibility.contains(userId);
-  }
-
-  /// Determines if a message is not visible to a specific user based on
-  /// restricted visibility settings.
-  ///
-  /// Returns true if the restrictedVisibility list exists and doesn't
-  /// contain the provided userId.
-  ///
-  /// Returns false in the following cases:
-  /// - The restrictedVisibility list is null or empty (visible to everyone)
-  /// - The provided userId is found in the restrictedVisibility list
-  ///
-  /// [userId] The unique identifier of the user to check visibility for.
-  bool isNotVisibleTo(String userId) => !isVisibleTo(userId);
-}
-
-/// Extension that adds moderation functionality to Message objects.
-///
-/// This extension provides methods to determine if a message is flagged,
-/// bounced, removed, or shadowed by the moderation system.
-extension MessageModerationHelper on Message {
-  /// True if the message is flagged by the moderation system.
-  bool get isFlagged => moderation?.action == ModerationAction.flag;
-
-  /// True if the message is bounced by the moderation system.
-  bool get isBounced => moderation?.action == ModerationAction.bounce;
-
-  /// True if the message is removed by the moderation system.
-  bool get isRemoved => moderation?.action == ModerationAction.remove;
-
-  /// True if the message is shadowed by the moderation system.
-  bool get isShadowed => moderation?.action == ModerationAction.shadow;
-
-  /// True if the message is bounced with an error by the moderation system.
-  bool get isBouncedWithError => isBounced && isError;
-}
-
-extension on Message {
-  /// Removes mentions from the message if they are not included in the text.
-  ///
-  /// This is useful for cleaning up the list of mentioned users before
-  /// sending the message.
-  Message removeMentionsIfNotIncluded() {
-    if (mentionedUsers.isEmpty) return this;
-
-    final messageTextToSend = text;
-    if (messageTextToSend == null) return this;
-
-    final updatedMentionedUsers = [...mentionedUsers];
-    for (final user in mentionedUsers.toSet()) {
-      if (messageTextToSend.contains('@${user.id}')) continue;
-      if (messageTextToSend.contains('@${user.name}')) continue;
-
-      updatedMentionedUsers.remove(user);
-    }
-
-    return copyWith(mentionedUsers: updatedMentionedUsers);
-  }
 }

@@ -134,7 +134,7 @@ extension MessageStateX on MessageState {
 
 /// Represents the various states a message can be in.
 @freezed
-sealed class MessageState with _$MessageState {
+class MessageState with _$MessageState {
   /// Initial state when the message is created.
   const factory MessageState.initial() = MessageInitial;
 
@@ -243,7 +243,7 @@ sealed class MessageState with _$MessageState {
 
 /// Represents the state of an outgoing message.
 @freezed
-sealed class OutgoingState with _$OutgoingState {
+class OutgoingState with _$OutgoingState {
   /// Sending state when the message is being sent.
   const factory OutgoingState.sending() = Sending;
 
@@ -262,7 +262,7 @@ sealed class OutgoingState with _$OutgoingState {
 
 /// Represents the completed state of a message.
 @freezed
-sealed class CompletedState with _$CompletedState {
+class CompletedState with _$CompletedState {
   /// Sent state when the message has been successfully sent.
   const factory CompletedState.sent() = Sent;
 
@@ -281,7 +281,7 @@ sealed class CompletedState with _$CompletedState {
 
 /// Represents the failed state of a message.
 @freezed
-sealed class FailedState with _$FailedState {
+class FailedState with _$FailedState {
   /// Sending failed state when the message fails to be sent.
   const factory FailedState.sendingFailed() = SendingFailed;
 

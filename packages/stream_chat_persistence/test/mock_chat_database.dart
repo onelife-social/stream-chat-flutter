@@ -3,65 +3,59 @@ import 'package:stream_chat_persistence/src/dao/dao.dart';
 import 'package:stream_chat_persistence/src/db/drift_chat_database.dart';
 
 class MockChatDatabase extends Mock implements DriftChatDatabase {
-  @override
-  String get userId => 'test-user-id';
-
-  @override
-  UserDao get userDao => _userDao ??= MockUserDao();
   UserDao? _userDao;
 
   @override
-  ChannelDao get channelDao => _channelDao ??= MockChannelDao();
+  UserDao get userDao => _userDao ??= MockUserDao();
+
   ChannelDao? _channelDao;
 
   @override
-  MessageDao get messageDao => _messageDao ??= MockMessageDao();
+  ChannelDao get channelDao => _channelDao ??= MockChannelDao();
+
   MessageDao? _messageDao;
+
+  @override
+  MessageDao get messageDao => _messageDao ??= MockMessageDao();
+
+  PinnedMessageDao? _pinnedMessageDao;
 
   @override
   PinnedMessageDao get pinnedMessageDao =>
       _pinnedMessageDao ??= MockPinnedMessageDao();
-  PinnedMessageDao? _pinnedMessageDao;
 
-  @override
-  MemberDao get memberDao => _memberDao ??= MockMemberDao();
   MemberDao? _memberDao;
 
   @override
-  ReactionDao get reactionDao => _reactionDao ??= MockReactionDao();
+  MemberDao get memberDao => _memberDao ??= MockMemberDao();
+
   ReactionDao? _reactionDao;
+
+  @override
+  ReactionDao get reactionDao => _reactionDao ??= MockReactionDao();
+
+  PinnedMessageReactionDao? _pinnedMessageReactionDao;
 
   @override
   PinnedMessageReactionDao get pinnedMessageReactionDao =>
       _pinnedMessageReactionDao ??= MockPinnedMessageReactionDao();
-  PinnedMessageReactionDao? _pinnedMessageReactionDao;
+
+  ReadDao? _readDao;
 
   @override
   ReadDao get readDao => _readDao ??= MockReadDao();
-  ReadDao? _readDao;
+
+  ChannelQueryDao? _channelQueryDao;
 
   @override
   ChannelQueryDao get channelQueryDao =>
       _channelQueryDao ??= MockChannelQueryDao();
-  ChannelQueryDao? _channelQueryDao;
+
+  ConnectionEventDao? _connectionEventDao;
 
   @override
   ConnectionEventDao get connectionEventDao =>
       _connectionEventDao ??= MockConnectionEventDao();
-  ConnectionEventDao? _connectionEventDao;
-
-  @override
-  PollDao get pollDao => _pollDao ??= MockPollDao();
-  PollDao? _pollDao;
-
-  @override
-  PollVoteDao get pollVoteDao => _pollVoteDao ??= MockPollVoteDao();
-  PollVoteDao? _pollVoteDao;
-
-  @override
-  DraftMessageDao get draftMessageDao =>
-      _draftMessageDao ??= MockDraftMessageDao();
-  DraftMessageDao? _draftMessageDao;
 
   @override
   Future<void> flush() => Future.value();
@@ -90,9 +84,3 @@ class MockReadDao extends Mock implements ReadDao {}
 class MockChannelQueryDao extends Mock implements ChannelQueryDao {}
 
 class MockConnectionEventDao extends Mock implements ConnectionEventDao {}
-
-class MockPollDao extends Mock implements PollDao {}
-
-class MockPollVoteDao extends Mock implements PollVoteDao {}
-
-class MockDraftMessageDao extends Mock implements DraftMessageDao {}

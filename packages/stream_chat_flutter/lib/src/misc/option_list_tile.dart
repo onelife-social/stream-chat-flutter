@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 
 /// {@template streamOptionListTile}
@@ -82,7 +81,7 @@ class StreamOptionListTile extends StatelessWidget {
                       padding: const EdgeInsets.only(right: 16),
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: trailing ?? const Empty(),
+                        child: trailing ?? Container(),
                       ),
                     ),
                   ),

@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:stream_chat/src/core/api/requests.dart';
 import 'package:stream_chat/src/core/api/responses.dart';
-import 'package:stream_chat/src/core/api/sort_order.dart';
 import 'package:stream_chat/src/core/http/stream_http_client.dart';
 import 'package:stream_chat/src/core/models/filter.dart';
 import 'package:stream_chat/src/core/models/member.dart';
@@ -33,7 +32,7 @@ class GeneralApi {
   Future<SearchMessagesResponse> searchMessages(
     Filter filter, {
     String? query,
-    SortOrder? sort,
+    List<SortOption>? sort,
     PaginationParams? pagination,
     Filter? messageFilters,
   }) async {
@@ -76,7 +75,7 @@ class GeneralApi {
     Filter? filter,
     String? channelId,
     List<Member>? members,
-    SortOrder<Member>? sort,
+    List<SortOption>? sort,
     PaginationParams? pagination,
   }) async {
     final response = await _client.get(

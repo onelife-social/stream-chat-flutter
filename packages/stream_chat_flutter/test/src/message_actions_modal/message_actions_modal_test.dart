@@ -71,10 +71,7 @@ void main() {
       final client = MockClient();
       final clientState = MockClientState();
       final channel = MockChannel(
-        ownCapabilities: [
-          ChannelCapability.sendMessage,
-          ChannelCapability.sendReaction,
-        ],
+        ownCapabilities: ['send-message', 'send-reaction'],
       );
 
       when(() => client.state).thenReturn(clientState);
@@ -389,7 +386,6 @@ void main() {
       when(() => client.state).thenReturn(clientState);
       when(() => clientState.currentUser).thenReturn(OwnUser(id: 'user-id'));
       when(() => channel.state).thenReturn(channelState);
-      when(channel.getRemainingCooldown).thenReturn(0);
 
       final themeData = ThemeData();
       final streamTheme = StreamChatThemeData.fromTheme(themeData);
@@ -402,10 +398,10 @@ void main() {
             child: child,
           ),
           theme: themeData,
-          home: Builder(
-            builder: (context) => StreamChannel(
-              showLoading: false,
-              channel: channel,
+          home: StreamChannel(
+            showLoading: false,
+            channel: channel,
+            child: SizedBox(
               child: MessageActionsModal(
                 messageWidget: const Text('test'),
                 message: Message(
@@ -415,11 +411,6 @@ void main() {
                   ),
                 ),
                 messageTheme: streamTheme.ownMessageTheme,
-                onEditMessageTap: (message) => showEditMessageSheet(
-                  context: context,
-                  message: message,
-                  channel: channel,
-                ),
               ),
             ),
           ),

@@ -30,16 +30,11 @@ void main() {
       '''Light MessageListViewThemeData lerps halfway to dark MessageListViewThemeData''',
       () {
     expect(
-      const StreamMessageListViewThemeData().lerp(
-        _messageListViewThemeDataControl,
-        _messageListViewThemeDataControlDark,
-        0.5,
-      ),
-      _messageListViewThemeDataControlHalfLerp,
-      // TODO: Remove skip, once we drop support for flutter v3.24.0
-      skip: true,
-      reason: 'Currently failing in flutter v3.27.0 due to new color alpha',
-    );
+        const StreamMessageListViewThemeData().lerp(
+            _messageListViewThemeDataControl,
+            _messageListViewThemeDataControlDark,
+            0.5),
+        _messageListViewThemeDataControlHalfLerp);
   });
 
   test(

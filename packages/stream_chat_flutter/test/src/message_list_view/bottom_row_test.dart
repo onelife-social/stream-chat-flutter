@@ -28,7 +28,7 @@ void main() {
 
   testWidgets('BottomRow', (tester) async {
     final theme = StreamChatThemeData.light();
-    final onThreadTap = MockValueChanged<Message>();
+    final onThreadTap = MockVoidSingleParamCallback<Message>();
 
     await tester.pumpWidget(
       MaterialApp(
@@ -62,9 +62,6 @@ void main() {
         ),
       ),
     );
-
-    // wait for the initial state to be rendered.
-    await tester.pump(Duration.zero);
 
     await tester.tap(find.byType(GestureDetector));
     await tester.pumpAndSettle();

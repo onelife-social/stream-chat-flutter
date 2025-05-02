@@ -43,9 +43,6 @@ void main() {
     when(() => channelClientState.membersStream)
         .thenAnswer((_) => const Stream.empty());
     when(() => channelClientState.members).thenReturn([]);
-    when(() => channelClientState.currentUserRead).thenReturn(null);
-    when(() => channelClientState.currentUserReadStream)
-        .thenAnswer((_) => const Stream.empty());
   });
 
   // https://github.com/GetStream/stream-chat-flutter/issues/674
@@ -99,10 +96,7 @@ void main() {
                 messageListViewTheme: const StreamMessageListViewThemeData(
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
-                    image: AssetImage(
-                      'lib/assets/images/placeholder.png',
-                      package: 'stream_chat_flutter',
-                    ),
+                    image: AssetImage('images/placeholder.png'),
                     fit: BoxFit.none,
                   ),
                 ),
@@ -168,10 +162,7 @@ void main() {
                 messageListViewTheme: const StreamMessageListViewThemeData(
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
-                    image: AssetImage(
-                      'lib/assets/images/placeholder.png',
-                      package: 'stream_chat_flutter',
-                    ),
+                    image: AssetImage('images/placeholder.png'),
                     fit: BoxFit.none,
                   ),
                 ),
@@ -215,10 +206,7 @@ void main() {
                 messageListViewTheme: const StreamMessageListViewThemeData(
                   backgroundColor: Colors.grey,
                   backgroundImage: DecorationImage(
-                    image: AssetImage(
-                      'lib/assets/images/placeholder.png',
-                      package: 'stream_chat_flutter',
-                    ),
+                    image: AssetImage('images/placeholder.png'),
                     fit: BoxFit.none,
                   ),
                 ),
@@ -227,7 +215,7 @@ void main() {
                 channel: channel,
                 child: const StreamMessageListView(
                   key: nonEmptyWidgetKey,
-                  initialScrollIndex: 7,
+                  initialScrollIndex: 5,
                 ),
               ),
             ),

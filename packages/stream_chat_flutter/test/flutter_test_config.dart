@@ -1,18 +1,30 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:alchemist/alchemist.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
-  final isRunningInCi = Platform.environment.containsKey('CI') ||
-      Platform.environment.containsKey('GITHUB_ACTIONS');
+  await loadAppFonts();
+  goldenFileComparator =
+      CustomGoldenFileComparator(Uri.parse('test/src/goldens'));
+  return testMain();
+}
 
-  return AlchemistConfig.runWithConfig(
-    config: AlchemistConfig(
-      platformGoldensConfig: PlatformGoldensConfig(
-        enabled: !isRunningInCi,
-      ),
-    ),
-    run: testMain,
-  );
+class CustomGoldenFileComparator extends LocalFileComparator {
+  CustomGoldenFileComparator(super.testFile);
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final result = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+
+    if (!result.passed && result.diffPercent > 0.05) {
+      final error = await generateFailureOutput(result, golden, basedir);
+      throw FlutterError(error);
+    }
+    return true;
+  }
 }

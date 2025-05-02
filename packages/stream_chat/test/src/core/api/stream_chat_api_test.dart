@@ -27,10 +27,6 @@ void main() {
     expect(streamChatApi.message, isNotNull);
   });
 
-  test('`.polls`', () {
-    expect(streamChatApi.polls, isNotNull);
-  });
-
   test('`.channel`', () {
     expect(streamChatApi.channel, isNotNull);
   });

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/message_input/stream_message_input_icon_button.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template quotingMessageTopArea}
@@ -30,31 +28,30 @@ class QuotingMessageTopArea extends StatelessWidget {
     final _streamChatTheme = StreamChatTheme.of(context);
     if (hasQuotedMessage) {
       return Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            StreamMessageInputIconButton(
-              iconSize: 24,
-              color: _streamChatTheme.colorTheme.disabled,
-              icon: const StreamSvgIcon(icon: StreamSvgIcons.reply),
-              onPressed: null,
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: StreamSvgIcon.reply(
+                color: _streamChatTheme.colorTheme.disabled,
+              ),
             ),
             Text(
               context.translations.replyToMessageLabel,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            StreamMessageInputIconButton(
-              iconSize: 24,
-              color: _streamChatTheme.colorTheme.textLowEmphasis,
-              icon: const StreamSvgIcon(icon: StreamSvgIcons.closeSmall),
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              icon: StreamSvgIcon.closeSmall(),
               onPressed: onQuotedMessageCleared?.call,
             ),
           ],
         ),
       );
     } else {
-      return const Empty();
+      return const SizedBox.shrink();
     }
   }
 }

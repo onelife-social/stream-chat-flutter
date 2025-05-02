@@ -61,6 +61,7 @@ void main() {
 
     expect(channel.hidden, false);
     expect(channel.extraData['hidden'], false);
+    print(channel.toJson());
     expect(channel.toJson(), {
       'id': 'cid',
       'type': 'test',
@@ -104,6 +105,7 @@ void main() {
 
     expect(channel.disabled, false);
     expect(channel.extraData['disabled'], false);
+    print(channel.toJson());
     expect(channel.toJson(), {
       'id': 'cid',
       'type': 'test',
@@ -148,6 +150,7 @@ void main() {
 
     expect(channel.truncatedAt, currentDate);
     expect(channel.extraData['truncated_at'], currentDate.toIso8601String());
+    print(channel.toJson());
     expect(channel.toJson(), {
       'id': 'cid',
       'type': 'test',

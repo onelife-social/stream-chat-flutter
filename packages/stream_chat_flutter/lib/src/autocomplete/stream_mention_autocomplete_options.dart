@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template user_mentions_overlay}
@@ -79,8 +78,8 @@ class _StreamMentionAutocompleteOptionsState
     return FutureBuilder<List<User>>(
       future: userMentionsFuture,
       builder: (context, snapshot) {
-        if (snapshot.hasError) return const Empty();
-        if (!snapshot.hasData) return const Empty();
+        if (snapshot.hasError) return const SizedBox.shrink();
+        if (!snapshot.hasData) return const SizedBox.shrink();
         final users = snapshot.data!;
 
         return StreamAutocompleteOptions<User>(

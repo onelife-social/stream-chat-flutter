@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamTypingIndicator}
@@ -37,7 +36,7 @@ class StreamTypingIndicator extends StatelessWidget {
     final channelState =
         channel?.state ?? StreamChannel.of(context).channel.state!;
 
-    final altWidget = alternativeWidget ?? const Empty();
+    final altWidget = alternativeWidget ?? const Offstage();
 
     return BetterStreamBuilder<Iterable<User>>(
       initialData: channelState.typingEvents.keys,
@@ -60,7 +59,7 @@ class StreamTypingIndicator extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Lottie.asset(
-                      'lib/assets/animations/typing_dots.json',
+                      'animations/typing_dots.json',
                       package: 'stream_chat_flutter',
                       height: 4,
                     ),

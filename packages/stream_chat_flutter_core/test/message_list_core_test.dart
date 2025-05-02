@@ -106,8 +106,6 @@ void main() {
         ),
       );
 
-      await tester.pumpAndSettle();
-
       expect(find.byKey(messageListCoreKey), findsOneWidget);
     },
   );
@@ -143,8 +141,6 @@ void main() {
           child: messageListCore,
         ),
       );
-
-      await tester.pumpAndSettle();
 
       expect(find.byKey(messageListCoreKey), findsOneWidget);
       expect(controller.paginateData, isNotNull);
@@ -186,8 +182,6 @@ void main() {
           child: messageListCore,
         ),
       );
-
-      await tester.pumpAndSettle();
 
       final finder = find.byKey(messageListCoreKey);
       final coreState = tester.firstState<MessageListCoreState>(finder);

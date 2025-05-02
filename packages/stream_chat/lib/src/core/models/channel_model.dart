@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:stream_chat/src/core/models/channel_config.dart';
-import 'package:stream_chat/src/core/models/member.dart';
 import 'package:stream_chat/src/core/models/user.dart';
 import 'package:stream_chat/src/core/util/serializer.dart';
 
@@ -14,7 +13,7 @@ class ChannelModel {
     String? id,
     String? type,
     String? cid,
-    List<String>? ownCapabilities,
+    this.ownCapabilities,
     ChannelConfig? config,
     this.createdBy,
     this.frozen = false,
@@ -23,7 +22,6 @@ class ChannelModel {
     DateTime? updatedAt,
     this.deletedAt,
     this.memberCount = 0,
-    this.members,
     Map<String, Object?> extraData = const {},
     this.team,
     this.cooldown = 0,
@@ -40,7 +38,6 @@ class ChannelModel {
         config = config ?? ChannelConfig(),
         createdAt = createdAt ?? DateTime.now(),
         updatedAt = updatedAt ?? DateTime.now(),
-        ownCapabilities = ownCapabilities?.map(ChannelCapability.new).toList(),
 
         // For backwards compatibility, set 'disabled', 'hidden'
         // and 'truncated_at' in [extraData].
@@ -68,9 +65,9 @@ class ChannelModel {
   @JsonKey(includeToJson: false)
   final String cid;
 
-  /// List of various capabilities that a user can have in a channel.
+  /// List of user permissions on this channel
   @JsonKey(includeToJson: false)
-  final List<ChannelCapability>? ownCapabilities;
+  final List<String>? ownCapabilities;
 
   /// The channel configuration data
   @JsonKey(includeToJson: false)
@@ -92,10 +89,6 @@ class ChannelModel {
   @JsonKey(includeToJson: false)
   final DateTime createdAt;
 
-  /// The date at which the channel was last updated.
-  @JsonKey(includeToJson: false, includeFromJson: false)
-  DateTime? get lastUpdatedAt => lastMessageAt ?? createdAt;
-
   /// The date of the last channel update
   @JsonKey(includeToJson: false)
   final DateTime updatedAt;
@@ -107,10 +100,6 @@ class ChannelModel {
   /// The count of this channel members
   @JsonKey(includeToJson: false)
   final int memberCount;
-
-  /// The list of this channel members
-  @JsonKey(includeToJson: false)
-  final List<Member>? members;
 
   /// The number of seconds in a cooldown
   @JsonKey(includeIfNull: false)
@@ -154,13 +143,13 @@ class ChannelModel {
     'updated_at',
     'deleted_at',
     'member_count',
-    'members',
     'team',
     'cooldown',
   ];
 
   /// Shortcut for channel name
-  String? get name => extraData['name'] as String?;
+  String get name =>
+      extraData.containsKey('name') ? extraData['name']! as String : cid;
 
   /// Serialize to json
   Map<String, dynamic> toJson() => Serializer.moveFromExtraDataToRoot(
@@ -181,7 +170,6 @@ class ChannelModel {
     DateTime? updatedAt,
     DateTime? deletedAt,
     int? memberCount,
-    List<Member>? members,
     Map<String, Object?>? extraData,
     String? team,
     int? cooldown,
@@ -202,7 +190,6 @@ class ChannelModel {
         updatedAt: updatedAt ?? this.updatedAt,
         deletedAt: deletedAt ?? this.deletedAt,
         memberCount: memberCount ?? this.memberCount,
-        members: members ?? this.members,
         extraData: extraData ?? this.extraData,
         team: team ?? this.team,
         cooldown: cooldown ?? this.cooldown,
@@ -233,7 +220,6 @@ class ChannelModel {
       updatedAt: other.updatedAt,
       deletedAt: other.deletedAt,
       memberCount: other.memberCount,
-      members: other.members,
       extraData: other.extraData,
       team: other.team,
       cooldown: other.cooldown,
@@ -242,119 +228,4 @@ class ChannelModel {
       truncatedAt: other.truncatedAt,
     );
   }
-}
-
-/// {@template channelCapability}
-/// Represents various capabilities that a user can have in a channel.
-/// {@endtemplate}
-extension type const ChannelCapability(String capability) implements String {
-  /// Ability to send a message.
-  static const sendMessage = ChannelCapability('send-message');
-
-  /// Ability to reply to a message.
-  static const sendReply = ChannelCapability('send-reply');
-
-  /// Ability to send a message with restricted visibility.
-  static const sendRestrictedVisibilityMessage = ChannelCapability(
-    'send-restricted-visibility-message',
-  );
-
-  /// Ability to send reactions.
-  static const sendReaction = ChannelCapability('send-reaction');
-
-  /// Ability to attach links to messages.
-  static const sendLinks = ChannelCapability('send-links');
-
-  /// Ability to attach files to messages.
-  static const createAttachment = ChannelCapability('create-attachment');
-
-  /// Ability to freeze or unfreeze channel.
-  static const freezeChannel = ChannelCapability('freeze-channel');
-
-  /// Ability to enable or disable slow mode.
-  static const setChannelCooldown = ChannelCapability('set-channel-cooldown');
-
-  /// Ability to leave channel (remove own membership).
-  static const leaveChannel = ChannelCapability('leave-channel');
-
-  /// Ability to join channel (add own membership).
-  static const joinChannel = ChannelCapability('join-channel');
-
-  /// Ability to pin a message.
-  static const pinMessage = ChannelCapability('pin-message');
-
-  /// Ability to delete any message from the channel.
-  static const deleteAnyMessage = ChannelCapability('delete-any-message');
-
-  /// Ability to delete own messages from the channel.
-  static const deleteOwnMessage = ChannelCapability('delete-own-message');
-
-  /// Ability to update any message in the channel.
-  static const updateAnyMessage = ChannelCapability('update-any-message');
-
-  /// Ability to update own messages in the channel.
-  static const updateOwnMessage = ChannelCapability('update-own-message');
-
-  /// Ability to use message search.
-  static const searchMessages = ChannelCapability('search-messages');
-
-  /// Ability to send typing events.
-  static const sendTypingEvents = ChannelCapability('send-typing-events');
-
-  /// Ability to upload message attachments.
-  static const uploadFile = ChannelCapability('upload-file');
-
-  /// Ability to delete channel.
-  static const deleteChannel = ChannelCapability('delete-channel');
-
-  /// Ability to update channel data.
-  static const updateChannel = ChannelCapability('update-channel');
-
-  /// Ability to update channel members.
-  static const updateChannelMembers = ChannelCapability(
-    'update-channel-members',
-  );
-
-  /// Ability to update thread data.
-  static const updateThread = ChannelCapability('update-thread');
-
-  /// Ability to quote a message.
-  static const quoteMessage = ChannelCapability('quote-message');
-
-  /// Ability to ban channel members.
-  static const banChannelMembers = ChannelCapability('ban-channel-members');
-
-  /// Ability to flag a message.
-  static const flagMessage = ChannelCapability('flag-message');
-
-  /// Ability to mute a channel.
-  static const muteChannel = ChannelCapability('mute-channel');
-
-  /// Ability to send custom events.
-  static const sendCustomEvents = ChannelCapability('send-custom-events');
-
-  /// Ability to receive read events.
-  static const readEvents = ChannelCapability('read-events');
-
-  /// Ability to receive connect events.
-  static const connectEvents = ChannelCapability('connect-events');
-
-  /// Ability to send and receive typing events.
-  static const typingEvents = ChannelCapability('typing-events');
-
-  /// Indicates that channel slow mode is active.
-  static const slowMode = ChannelCapability('slow-mode');
-
-  /// Indicates that the user is allowed to post messages as usual even if the
-  /// channel is in slow mode.
-  static const skipSlowMode = ChannelCapability('skip-slow-mode');
-
-  /// Ability to update a poll.
-  static const sendPoll = ChannelCapability('send-poll');
-
-  /// Ability to update a poll.
-  static const castPollVote = ChannelCapability('cast-poll-vote');
-
-  /// Ability to query poll votes.
-  static const queryPollVotes = ChannelCapability('query-poll-votes');
 }

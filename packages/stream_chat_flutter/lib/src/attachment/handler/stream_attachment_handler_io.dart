@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
-import 'package:gal/gal.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:stream_chat_flutter/src/attachment/handler/common.dart';
@@ -111,9 +111,7 @@ class StreamAttachmentHandler extends StreamAttachmentHandlerBase {
     FileType type = FileType.any,
     List<String>? allowedExtensions,
     Function(FilePickerStatus)? onFileLoading,
-    @Deprecated('Has no effect, Use compressionQuality instead.')
     bool allowCompression = true,
-    int compressionQuality = 0,
     bool withData = true,
     bool withReadStream = false,
     bool lockParentWindow = true,
@@ -124,7 +122,7 @@ class StreamAttachmentHandler extends StreamAttachmentHandlerBase {
       type: type,
       allowedExtensions: allowedExtensions,
       onFileLoading: onFileLoading,
-      compressionQuality: compressionQuality,
+      allowCompression: allowCompression,
       withData: withData,
       withReadStream: withReadStream,
       lockParentWindow: lockParentWindow,
@@ -198,7 +196,7 @@ class StreamAttachmentHandler extends StreamAttachmentHandlerBase {
 
     // Now that the file is saved, we need to copy it to the user's gallery
     // because the gallery only shows files that are in the gallery folder.
-    await Gal.putImage(path);
+    await ImageGallerySaverPlus.saveFile(path);
 
     // Once the file is copied to the gallery, we can delete the temporary file.
     await file.delete();

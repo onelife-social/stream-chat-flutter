@@ -146,8 +146,7 @@ class StreamUserListTile extends StatelessWidget {
         );
 
     final selectedWidget = this.selectedWidget ??
-        StreamSvgIcon(
-          icon: StreamSvgIcons.checkSend,
+        StreamSvgIcon.checkSend(
           color: chatThemeData.colorTheme.accentPrimary,
         );
 
@@ -159,8 +158,6 @@ class StreamUserListTile extends StatelessWidget {
       title: title,
       subtitle: subtitle,
       tileColor: tileColor,
-      visualDensity: visualDensity,
-      contentPadding: contentPadding,
     );
   }
 }
@@ -186,7 +183,6 @@ class UserLastActive extends StatelessWidget {
           : '${context.translations.userLastOnlineText} '
               '${Jiffy.parseFromDateTime(lastActive).fromNow()}',
       style: chatTheme.textTheme.footnote.copyWith(
-        // ignore: deprecated_member_use
         color: chatTheme.colorTheme.textHighEmphasis.withOpacity(0.5),
       ),
     );

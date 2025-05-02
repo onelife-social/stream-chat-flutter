@@ -42,7 +42,6 @@ class MessageWidgetContent extends StatelessWidget {
     required this.hasQuotedMessage,
     required this.hasUrlAttachments,
     required this.hasNonUrlAttachments,
-    required this.hasPoll,
     required this.isOnlyEmoji,
     required this.isGiphy,
     required this.attachmentBuilders,
@@ -137,9 +136,6 @@ class MessageWidgetContent extends StatelessWidget {
 
   /// {@macro hasNonUrlAttachments}
   final bool hasNonUrlAttachments;
-
-  /// {@macro hasPoll}
-  final bool hasPoll;
 
   /// {@macro isOnlyEmoji}
   final bool isOnlyEmoji;
@@ -259,7 +255,9 @@ class MessageWidgetContent extends StatelessWidget {
                     reverse ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (isPinned && message.pinnedBy != null && showPinHighlight)
+                  if (message.pinned &&
+                      message.pinnedBy != null &&
+                      showPinHighlight)
                     PinnedMessage(
                       pinnedBy: message.pinnedBy!,
                       currentUser: streamChat.currentUser!,
@@ -336,7 +334,6 @@ class MessageWidgetContent extends StatelessWidget {
                                         hasUrlAttachments: hasUrlAttachments,
                                         hasNonUrlAttachments:
                                             hasNonUrlAttachments,
-                                        hasPoll: hasPoll,
                                         isOnlyEmoji: isOnlyEmoji,
                                         isGiphy: isGiphy,
                                         attachmentBuilders: attachmentBuilders,
@@ -426,10 +423,7 @@ class MessageWidgetContent extends StatelessWidget {
                 right: reverse ? 0 : null,
                 left: reverse ? null : 0,
                 bottom: showBottomRow ? 18 : -2,
-                child: StreamSvgIcon(
-                  icon: StreamSvgIcons.error,
-                  color: streamChatTheme.colorTheme.accentError,
-                ),
+                child: StreamSvgIcon.error(size: 20),
               ),
           ],
         ),

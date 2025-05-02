@@ -36,6 +36,7 @@ void main() {
       ),
     ]);
     when(() => channel.name).thenReturn('test-channel');
+    when(() => channel.id).thenReturn('123456789');
     when(() => channel.isDistinct).thenReturn(true);
     when(() => channel.memberCount).thenReturn(2);
     when(() => channelState.membersStream).thenAnswer(
@@ -70,9 +71,6 @@ void main() {
         ),
       ),
     );
-
-    // wait for the initial state to be rendered.
-    await tester.pump(Duration.zero);
 
     expect(find.byType(SimpleDialog), findsOneWidget);
     expect(find.byType(StreamChannelInfo), findsOneWidget);

@@ -26,16 +26,11 @@ void main() {
         '''Light ChannelListHeaderThemeData lerps halfway to dark ChannelListHeaderThemeData''',
         () {
       expect(
-        const StreamChannelListHeaderThemeData().lerp(
-          _channelListHeaderThemeControl,
-          _channelListHeaderThemeControlDark,
-          0.5,
-        ),
-        _channelListHeaderThemeControlMidLerp,
-        // TODO: Remove skip, once we drop support for flutter v3.24.0
-        skip: true,
-        reason: 'Currently failing in flutter v3.27.0 due to new color alpha',
-      );
+          const StreamChannelListHeaderThemeData().lerp(
+              _channelListHeaderThemeControl,
+              _channelListHeaderThemeControlDark,
+              0.5),
+          _channelListHeaderThemeControlMidLerp);
     });
 
     test(
@@ -82,7 +77,7 @@ final _channelListHeaderThemeControlMidLerp = StreamChannelListHeaderThemeData(
   titleStyle: const TextStyle(
     color: Color(0xff7f7f7f),
     fontSize: 16,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.bold,
   ),
 );
 

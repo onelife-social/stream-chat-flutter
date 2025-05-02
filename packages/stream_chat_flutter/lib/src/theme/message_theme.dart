@@ -15,7 +15,6 @@ class StreamMessageThemeData with Diagnosticable {
     this.messageTextStyle,
     this.messageAuthorStyle,
     this.messageLinksStyle,
-    this.messageDeletedStyle,
     this.messageBackgroundColor,
     this.messageBorderColor,
     this.reactionsBackgroundColor,
@@ -42,11 +41,6 @@ class StreamMessageThemeData with Diagnosticable {
 
   /// Text style for created at text
   final TextStyle? createdAtStyle;
-
-  /// Text style for the text on a deleted message
-  /// If not set [messageTextStyle] is used with [FontStyle.italic] and
-  /// [createdAtStyle.color].
-  final TextStyle? messageDeletedStyle;
 
   /// Text style for replies
   final TextStyle? repliesStyle;
@@ -92,7 +86,6 @@ class StreamMessageThemeData with Diagnosticable {
     TextStyle? messageTextStyle,
     TextStyle? messageAuthorStyle,
     TextStyle? messageLinksStyle,
-    TextStyle? messageDeletedStyle,
     TextStyle? createdAtStyle,
     TextStyle? repliesStyle,
     Color? messageBackgroundColor,
@@ -113,7 +106,6 @@ class StreamMessageThemeData with Diagnosticable {
       messageAuthorStyle: messageAuthorStyle ?? this.messageAuthorStyle,
       messageLinksStyle: messageLinksStyle ?? this.messageLinksStyle,
       createdAtStyle: createdAtStyle ?? this.createdAtStyle,
-      messageDeletedStyle: messageDeletedStyle ?? this.messageDeletedStyle,
       messageBackgroundColor:
           messageBackgroundColor ?? this.messageBackgroundColor,
       messageBorderColor: messageBorderColor ?? this.messageBorderColor,
@@ -147,11 +139,9 @@ class StreamMessageThemeData with Diagnosticable {
     return StreamMessageThemeData(
       avatarTheme:
           const StreamAvatarThemeData().lerp(a.avatarTheme!, b.avatarTheme!, t),
+      createdAtStyle: TextStyle.lerp(a.createdAtStyle, b.createdAtStyle, t),
       messageAuthorStyle:
           TextStyle.lerp(a.messageAuthorStyle, b.messageAuthorStyle, t),
-      createdAtStyle: TextStyle.lerp(a.createdAtStyle, b.createdAtStyle, t),
-      messageDeletedStyle:
-          TextStyle.lerp(a.messageDeletedStyle, b.messageDeletedStyle, t),
       messageBackgroundColor:
           Color.lerp(a.messageBackgroundColor, b.messageBackgroundColor, t),
       messageBorderColor:
@@ -212,9 +202,6 @@ class StreamMessageThemeData with Diagnosticable {
           other.messageLinksStyle,
       createdAtStyle:
           createdAtStyle?.merge(other.createdAtStyle) ?? other.createdAtStyle,
-      messageDeletedStyle:
-          messageDeletedStyle?.merge(other.messageDeletedStyle) ??
-              other.messageDeletedStyle,
       repliesStyle:
           repliesStyle?.merge(other.repliesStyle) ?? other.repliesStyle,
       messageBackgroundColor: other.messageBackgroundColor,
@@ -241,7 +228,6 @@ class StreamMessageThemeData with Diagnosticable {
           messageAuthorStyle == other.messageAuthorStyle &&
           messageLinksStyle == other.messageLinksStyle &&
           createdAtStyle == other.createdAtStyle &&
-          messageDeletedStyle == other.messageDeletedStyle &&
           repliesStyle == other.repliesStyle &&
           messageBackgroundColor == other.messageBackgroundColor &&
           messageBorderColor == other.messageBorderColor &&
@@ -262,7 +248,6 @@ class StreamMessageThemeData with Diagnosticable {
       messageAuthorStyle.hashCode ^
       messageLinksStyle.hashCode ^
       createdAtStyle.hashCode ^
-      messageDeletedStyle.hashCode ^
       repliesStyle.hashCode ^
       messageBackgroundColor.hashCode ^
       messageBorderColor.hashCode ^
@@ -285,7 +270,6 @@ class StreamMessageThemeData with Diagnosticable {
       ..add(DiagnosticsProperty('messageAuthorStyle', messageAuthorStyle))
       ..add(DiagnosticsProperty('messageLinksStyle', messageLinksStyle))
       ..add(DiagnosticsProperty('createdAtStyle', createdAtStyle))
-      ..add(DiagnosticsProperty('messageDeletedStyle', messageDeletedStyle))
       ..add(DiagnosticsProperty('repliesStyle', repliesStyle))
       ..add(ColorProperty('messageBackgroundColor', messageBackgroundColor))
       ..add(ColorProperty('messageBorderColor', messageBorderColor))

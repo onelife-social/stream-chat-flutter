@@ -24,7 +24,7 @@ void main() {
         final attachments = [
           Attachment(type: 'file', id: 'file1'),
           Attachment(type: 'file', id: 'file2'),
-          Attachment(type: 'image', id: 'image1'),
+          Attachment(type: 'media', id: 'media1'),
         ];
 
         await tester.pumpWidget(

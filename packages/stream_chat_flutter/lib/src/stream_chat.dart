@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/src/video/vlc/vlc_manager.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -131,7 +130,12 @@ class StreamChatState extends State<StreamChat> {
                   connectivityStream: widget.connectivityStream,
                   child: Builder(
                     builder: (context) {
-                      return widget.child ?? const Empty();
+                      StreamChatClient.additionalHeaders = {
+                        'X-Stream-Client':
+                            '${StreamChatClient.defaultUserAgent}-'
+                                'ui-${StreamChatClient.packageVersion}',
+                      };
+                      return widget.child ?? const Offstage();
                     },
                   ),
                 ),

@@ -77,7 +77,7 @@ class StreamGiphyAttachmentThumbnail extends StatelessWidget {
       fit: fit,
       placeholder: (context, __) {
         final image = Image.asset(
-          'lib/assets/images/placeholder.png',
+          'images/placeholder.png',
           width: width,
           height: height,
           fit: BoxFit.cover,

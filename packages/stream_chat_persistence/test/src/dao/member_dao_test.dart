@@ -27,14 +27,11 @@ void main() {
         banned: math.Random().nextBool(),
         shadowBanned: math.Random().nextBool(),
         createdAt: DateTime.now(),
-        pinnedAt: DateTime.now(),
-        archivedAt: DateTime.now(),
         isModerator: math.Random().nextBool(),
         invited: math.Random().nextBool(),
         inviteAcceptedAt: DateTime.now(),
         channelRole: 'testRole',
         updatedAt: DateTime.now(),
-        extraData: const {'extra_test_field': 'extraTestData'},
       ),
     );
     await database.userDao.updateUsers(users);
@@ -63,8 +60,6 @@ void main() {
       expect(fetchedMember.banned, member.banned);
       expect(fetchedMember.shadowBanned, member.shadowBanned);
       expect(fetchedMember.createdAt, isSameDateAs(member.createdAt));
-      expect(fetchedMember.pinnedAt, isSameDateAs(member.pinnedAt));
-      expect(fetchedMember.archivedAt, isSameDateAs(member.archivedAt));
       expect(fetchedMember.isModerator, member.isModerator);
       expect(fetchedMember.invited, member.invited);
       expect(fetchedMember.channelRole, member.channelRole);
@@ -73,7 +68,6 @@ void main() {
         fetchedMember.inviteAcceptedAt,
         isSameDateAs(member.inviteAcceptedAt),
       );
-      expect(fetchedMember.extraData, member.extraData);
     }
   });
 
@@ -93,8 +87,6 @@ void main() {
       expect(fetchedMember.banned, member.banned);
       expect(fetchedMember.shadowBanned, member.shadowBanned);
       expect(fetchedMember.createdAt, isSameDateAs(member.createdAt));
-      expect(fetchedMember.pinnedAt, isSameDateAs(member.pinnedAt));
-      expect(fetchedMember.archivedAt, isSameDateAs(member.archivedAt));
       expect(fetchedMember.isModerator, member.isModerator);
       expect(fetchedMember.invited, member.invited);
       expect(fetchedMember.channelRole, member.channelRole);
@@ -103,7 +95,6 @@ void main() {
         fetchedMember.inviteAcceptedAt,
         isSameDateAs(member.inviteAcceptedAt),
       );
-      expect(fetchedMember.extraData, member.extraData);
     }
 
     // Modifying one of the member and also adding one new

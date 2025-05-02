@@ -86,9 +86,6 @@ void main() {
         ),
       ));
 
-      // wait for the initial state to be rendered.
-      await tester.pump(Duration.zero);
-
       expect(find.byKey(typingKey), findsOneWidget);
       expect(find.byType(Flexible), findsOneWidget);
     },

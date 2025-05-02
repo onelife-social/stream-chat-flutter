@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamConnectionStatusBuilder}
@@ -45,7 +44,7 @@ class StreamConnectionStatusBuilder extends StatelessWidget {
         if (errorBuilder != null) {
           return errorBuilder!(context, error);
         }
-        return const Empty();
+        return const Offstage();
       },
       builder: statusBuilder,
     );

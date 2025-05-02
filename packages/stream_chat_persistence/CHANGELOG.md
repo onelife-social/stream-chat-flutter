@@ -1,42 +1,3 @@
-## 9.8.0
-
-- Added `pinnedAt` and `archivedAt` fields on `Member`.
-- Added support for DraftMessages.
-
-## 9.7.0
-
-- Updated `stream_chat` dependency to [`9.7.0`](https://pub.dev/packages/stream_chat/changelog).
-
-## 9.6.0
-
-- Updated `stream_chat` dependency to [`9.6.0`](https://pub.dev/packages/stream_chat/changelog).
-
-## 9.5.0
-
-- Added support for `Message.restrictedVisibility` field.
-- Added support for `Member.extraData` field.
-
-## 9.4.0
-
-- Updated minimum Flutter version to 3.27.4 for the SDK.
-
-## 9.3.0
-
-- Updated `stream_chat` dependency to [`9.3.0`](https://pub.dev/packages/stream_chat/changelog).
-
-## 9.2.0
-
-- Updated `stream_chat` dependency to [`9.2.0`](https://pub.dev/packages/stream_chat/changelog).
-
-## 9.1.0
-
-- Updated `stream_chat` dependency to [`9.1.0`](https://pub.dev/packages/stream_chat/changelog).
-
-## 9.0.0
-
-- Added support for `Poll` and `PollVote` entities in the database.
-- Updated minimum Flutter version to 3.24.5 for the SDK.
-
 ## 8.3.0
 
 - Updated `stream_chat` dependency to [`8.3.0`](https://pub.dev/packages/stream_chat/changelog).
@@ -108,7 +69,8 @@
 
 ## 6.7.0
 
-- [[#1683]](https://github.com/GetStream/stream-chat-flutter/issues/1683) Fixed SqliteException no such column `messages.state`.
+- [[#1683]](https://github.com/GetStream/stream-chat-flutter/issues/1683) Fixed SqliteException no such
+  column `messages.state`.
 - Updated `stream_chat` dependency to [`6.7.0`](https://pub.dev/packages/stream_chat/changelog).
 
 ## 6.6.0
@@ -203,7 +165,8 @@
 ## 3.0.0
 
 - Updated `stream_chat` dependency to [`3.0.0`](https://pub.dev/packages/stream_chat/changelog).
-- [[#604]](https://github.com/GetStream/stream-chat-flutter/issues/604) Fix cascade deletion by enabling `pragma foreign_keys`.
+- [[#604]](https://github.com/GetStream/stream-chat-flutter/issues/604) Fix cascade deletion by
+  enabling `pragma foreign_keys`.
 - Added a new table `PinnedMessageReactions` and dao `PinnedMessageReactionDao` specifically for pinned messages.
 
 ## 2.2.0

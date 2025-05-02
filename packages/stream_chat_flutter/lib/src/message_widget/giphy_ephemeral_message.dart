@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:stream_chat_flutter/src/attachment/thumbnail/giphy_attachment_thumbnail.dart';
-import 'package:stream_chat_flutter/src/icons/stream_svg_icon.dart';
-import 'package:stream_chat_flutter/src/misc/timestamp.dart';
+import 'package:stream_chat_flutter/src/misc/stream_svg_icon.dart';
 import 'package:stream_chat_flutter/src/misc/visible_footnote.dart';
 import 'package:stream_chat_flutter/src/theme/stream_chat_theme.dart';
 import 'package:stream_chat_flutter/src/utils/extensions.dart';
@@ -104,10 +103,9 @@ class GiphyEphemeralMessage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const StreamVisibleFootnote(),
-                  const SizedBox(width: 8),
-                  StreamTimestamp(
-                    date: message.createdAt.toLocal(),
-                    formatter: (_, date) => Jiffy.parseFromDateTime(date).jm,
+                  const SizedBox(width: 4),
+                  Text(
+                    Jiffy.parseFromDateTime(message.createdAt.toLocal()).jm,
                     style: textTheme.footnote.copyWith(
                       color: colorTheme.textLowEmphasis,
                     ),
@@ -151,43 +149,43 @@ class GiphyActions extends StatelessWidget {
       children: [
         Expanded(
           child: TextButton(
-            onPressed: switch (onActionPressed) {
-              final onPressed? => () => onPressed('image_action', 'cancel'),
-              _ => null,
+            onPressed: () {
+              onActionPressed?.call('image_action', 'cancel');
             },
-            style: TextButton.styleFrom(
-              textStyle: textTheme.bodyBold,
-              foregroundColor: colorTheme.textLowEmphasis,
+            child: Text(
+              context.translations.cancelLabel.capitalize(),
+              style: textTheme.bodyBold.copyWith(
+                color: colorTheme.textLowEmphasis,
+              ),
             ),
-            child: Text(context.translations.cancelLabel.capitalize()),
           ),
         ),
         VerticalDivider(thickness: 1, width: 4, color: colorTheme.borders),
         Expanded(
           child: TextButton(
-            onPressed: switch (onActionPressed) {
-              final onPressed? => () => onPressed('image_action', 'shuffle'),
-              _ => null,
+            onPressed: () {
+              onActionPressed?.call('image_action', 'shuffle');
             },
-            style: TextButton.styleFrom(
-              textStyle: textTheme.bodyBold,
-              foregroundColor: colorTheme.textLowEmphasis,
+            child: Text(
+              context.translations.shuffleLabel.capitalize(),
+              style: textTheme.bodyBold.copyWith(
+                color: colorTheme.textLowEmphasis,
+              ),
             ),
-            child: Text(context.translations.shuffleLabel.capitalize()),
           ),
         ),
         VerticalDivider(thickness: 1, width: 4, color: colorTheme.borders),
         Expanded(
           child: TextButton(
-            onPressed: switch (onActionPressed) {
-              final onPressed? => () => onPressed('image_action', 'send'),
-              _ => null,
+            onPressed: () {
+              onActionPressed?.call('image_action', 'send');
             },
-            style: TextButton.styleFrom(
-              textStyle: textTheme.bodyBold,
-              foregroundColor: colorTheme.accentPrimary,
+            child: Text(
+              context.translations.sendLabel.capitalize(),
+              style: textTheme.bodyBold.copyWith(
+                color: colorTheme.accentPrimary,
+              ),
             ),
-            child: Text(context.translations.sendLabel.capitalize()),
           ),
         ),
       ],
@@ -210,7 +208,7 @@ class GiphyHeader extends StatelessWidget {
     final colorTheme = StreamChatTheme.of(context).colorTheme;
     return Row(
       children: [
-        const StreamSvgIcon(icon: StreamSvgIcons.giphy),
+        StreamSvgIcon.giphyIcon(),
         const SizedBox(width: 8),
         Text(
           context.translations.giphyLabel,
@@ -224,7 +222,6 @@ class GiphyHeader extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                // ignore: deprecated_member_use
                 color: colorTheme.textHighEmphasis.withOpacity(0.5),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:stream_chat/src/core/http/stream_http_client.dart';
 import 'package:stream_chat/stream_chat.dart';
 
 /// Defines the api dedicated to moderation operations
@@ -130,7 +131,7 @@ class ModerationApi {
   /// Queries banned users.
   Future<QueryBannedUsersResponse> queryBannedUsers({
     Filter? filter,
-    SortOrder<BannedUser>? sort,
+    List<SortOption>? sort,
     PaginationParams? pagination,
   }) async {
     final response = await _client.get(

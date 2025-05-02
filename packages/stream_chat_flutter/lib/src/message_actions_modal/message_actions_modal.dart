@@ -4,7 +4,6 @@ import 'package:flutter/material.dart' hide ButtonStyle;
 import 'package:stream_chat_flutter/src/message_actions_modal/mam_widgets.dart';
 import 'package:stream_chat_flutter/src/message_actions_modal/mark_unread_message_button.dart';
 import 'package:stream_chat_flutter/src/message_widget/reactions/reactions_align.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template messageActionsModal}
@@ -21,7 +20,6 @@ class MessageActionsModal extends StatefulWidget {
     this.showDeleteMessage = true,
     this.showEditMessage = true,
     this.onReplyTap,
-    this.onEditMessageTap,
     this.onConfirmDeleteTap,
     this.onThreadReplyTap,
     this.showCopyMessage = true,
@@ -48,9 +46,6 @@ class MessageActionsModal extends StatefulWidget {
 
   /// The action to perform when "reply" is tapped
   final OnMessageTap? onReplyTap;
-
-  /// The action to perform when "Edit Message" is tapped.
-  final OnMessageTap? onEditMessageTap;
 
   /// The action to perform when delete confirmation button is tapped.
   final Future<void> Function(Message)? onConfirmDeleteTap;
@@ -113,12 +108,14 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     final user = StreamChat.of(context).currentUser;
     final orientation = mediaQueryData.orientation;
 
+    final _userPermissions = StreamChannel.of(context).channel.ownCapabilities;
+    final hasReactionPermission =
+        _userPermissions.contains(PermissionType.sendReaction);
+
     final fontSize = widget.messageTheme.messageTextStyle?.fontSize;
     final streamChatThemeData = StreamChatTheme.of(context);
 
     final channel = StreamChannel.of(context).channel;
-
-    final canSendReaction = channel.canSendReaction;
 
     final child = Center(
       child: SingleChildScrollView(
@@ -129,7 +126,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                if (widget.showReactionPicker && canSendReaction)
+                if (widget.showReactionPicker && hasReactionPermission)
                   LayoutBuilder(
                     builder: (context, constraints) {
                       return Align(
@@ -209,15 +206,16 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
                             ),
                           if (widget.showEditMessage)
                             EditMessageButton(
-                              onTap: switch (widget.onEditMessageTap) {
-                                final onTap? => () => onTap(widget.message),
-                                _ => null,
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                _showEditBottomSheet(context);
                               },
                             ),
                           if (widget.showCopyMessage)
                             CopyMessageButton(
                               onTap: () {
                                 widget.onCopyTap?.call(widget.message);
+                                Navigator.of(context).pop();
                               },
                             ),
                           if (widget.showFlagButton)
@@ -299,9 +297,9 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
         padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
-            messageAction.leading ?? const Empty(),
+            messageAction.leading ?? const Offstage(),
             const SizedBox(width: 16),
-            messageAction.title ?? const Empty(),
+            messageAction.title ?? const Offstage(),
           ],
         ),
       ),
@@ -315,8 +313,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     final answer = await showConfirmationBottomSheet(
       context,
       title: context.translations.flagMessageLabel,
-      icon: StreamSvgIcon(
-        icon: StreamSvgIcons.flag,
+      icon: StreamSvgIcon.flag(
         color: streamChatThemeData.colorTheme.accentError,
         size: 24,
       ),
@@ -331,8 +328,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
         await client.flagMessage(widget.message.id);
         await showInfoBottomSheet(
           context,
-          icon: StreamSvgIcon(
-            icon: StreamSvgIcons.flag,
+          icon: StreamSvgIcon.flag(
             color: theme.colorTheme.accentError,
             size: 24,
           ),
@@ -345,8 +341,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
             err.errorCode == ChatErrorCode.inputError) {
           await showInfoBottomSheet(
             context,
-            icon: StreamSvgIcon(
-              icon: StreamSvgIcons.flag,
+            icon: StreamSvgIcon.flag(
               color: theme.colorTheme.accentError,
               size: 24,
             ),
@@ -382,8 +377,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
     final answer = await showConfirmationBottomSheet(
       context,
       title: context.translations.deleteMessageLabel,
-      icon: StreamSvgIcon(
-        icon: StreamSvgIcons.flag,
+      icon: StreamSvgIcon.flag(
         color: StreamChatTheme.of(context).colorTheme.accentError,
         size: 24,
       ),
@@ -412,14 +406,35 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
   void _showErrorAlertBottomSheet() {
     showInfoBottomSheet(
       context,
-      icon: StreamSvgIcon(
-        icon: StreamSvgIcons.error,
+      icon: StreamSvgIcon.error(
         color: StreamChatTheme.of(context).colorTheme.accentError,
         size: 24,
       ),
       details: context.translations.operationCouldNotBeCompletedText,
       title: context.translations.somethingWentWrongError,
       okText: context.translations.okLabel,
+    );
+  }
+
+  void _showEditBottomSheet(BuildContext context) {
+    final channel = StreamChannel.of(context).channel;
+    showModalBottomSheet(
+      context: context,
+      elevation: 2,
+      clipBehavior: Clip.hardEdge,
+      isScrollControlled: true,
+      backgroundColor: StreamMessageInputTheme.of(context).inputBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      builder: (context) => EditMessageSheet(
+        channel: channel,
+        message: widget.message,
+        editMessageInputBuilder: widget.editMessageInputBuilder,
+      ),
     );
   }
 }

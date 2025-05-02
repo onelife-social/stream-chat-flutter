@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template loadingIndicatorMLV}
@@ -42,14 +41,13 @@ class LoadingIndicator extends StatelessWidget {
       stream: stream,
       initialData: false,
       errorBuilder: (context, error) => ColoredBox(
-        // ignore: deprecated_member_use
         color: streamTheme.colorTheme.accentError.withOpacity(0.2),
         child: Center(
           child: Text(context.translations.loadingMessagesError),
         ),
       ),
       builder: (context, data) {
-        if (!data) return const Empty();
+        if (!data) return const Offstage();
         return indicatorBuilder?.call(context) ??
             const Center(
               child: Padding(

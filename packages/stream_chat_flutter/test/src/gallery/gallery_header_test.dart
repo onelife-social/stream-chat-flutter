@@ -1,7 +1,7 @@
-import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -83,19 +83,13 @@ void main() {
         ),
       );
 
-      // wait for the initial state to be rendered.
-      await tester.pumpAndSettle();
-
       expect(find.byType(StreamSvgIcon), findsNWidgets(2));
     },
   );
 
-  goldenTest(
-    'golden test for GalleryHeader',
-    fileName: 'gallery_header_0',
-    constraints: const BoxConstraints.tightFor(width: 300, height: 300),
-    builder: () {
-      return MaterialAppWrapper(
+  testGoldens('golden test for GalleryHeader', (tester) async {
+    await tester.pumpWidget(
+      MaterialAppWrapper(
         home: StreamChat(
           client: client,
           child: StreamChannel(
@@ -105,7 +99,7 @@ void main() {
               child: Scaffold(
                 appBar: StreamGalleryHeader(
                   userName: 'User',
-                  sentAt: '12:02 AM',
+                  sentAt: DateTime.now().toIso8601String(),
                   message: Message(),
                   attachment: MockAttachment(),
                 ),
@@ -113,9 +107,11 @@ void main() {
             ),
           ),
         ),
-      );
-    },
-  );
+      ),
+    );
+
+    await screenMatchesGolden(tester, 'gallery_header_0');
+  });
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger

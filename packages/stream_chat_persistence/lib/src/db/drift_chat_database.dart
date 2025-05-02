@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:stream_chat/stream_chat.dart' show VotingVisibility;
 import 'package:stream_chat_persistence/src/converter/converter.dart';
 import 'package:stream_chat_persistence/src/dao/dao.dart';
 import 'package:stream_chat_persistence/src/entity/entity.dart';
@@ -12,11 +11,8 @@ part 'drift_chat_database.g.dart';
 @DriftDatabase(
   tables: [
     Channels,
-    DraftMessages,
     Messages,
     PinnedMessages,
-    Polls,
-    PollVotes,
     PinnedMessageReactions,
     Reactions,
     Users,
@@ -29,12 +25,9 @@ part 'drift_chat_database.g.dart';
     UserDao,
     ChannelDao,
     MessageDao,
-    DraftMessageDao,
     PinnedMessageDao,
     PinnedMessageReactionDao,
     MemberDao,
-    PollDao,
-    PollVoteDao,
     ReactionDao,
     ReadDao,
     ChannelQueryDao,
@@ -55,7 +48,7 @@ class DriftChatDatabase extends _$DriftChatDatabase {
 
   // you should bump this number whenever you change or add a table definition.
   @override
-  int get schemaVersion => 20;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

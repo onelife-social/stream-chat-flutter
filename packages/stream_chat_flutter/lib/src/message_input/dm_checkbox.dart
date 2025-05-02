@@ -30,7 +30,6 @@ class DmCheckbox extends StatelessWidget {
   Widget build(BuildContext context) {
     final _streamChatTheme = StreamChatTheme.of(context);
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           height: 16,
@@ -46,9 +45,8 @@ class DmCheckbox extends StatelessWidget {
                   duration: const Duration(milliseconds: 300),
                   reverseDuration: const Duration(milliseconds: 300),
                   crossFadeState: crossFadeState,
-                  firstChild: StreamSvgIcon(
+                  firstChild: StreamSvgIcon.check(
                     size: 16,
-                    icon: StreamSvgIcons.check,
                     color: _streamChatTheme.colorTheme.barsBg,
                   ),
                   secondChild: const SizedBox(
@@ -66,7 +64,6 @@ class DmCheckbox extends StatelessWidget {
             context.translations.alsoSendAsDirectMessageLabel,
             style: _streamChatTheme.textTheme.footnote.copyWith(
               color:
-                  // ignore: deprecated_member_use
                   _streamChatTheme.colorTheme.textHighEmphasis.withOpacity(0.5),
             ),
           ),

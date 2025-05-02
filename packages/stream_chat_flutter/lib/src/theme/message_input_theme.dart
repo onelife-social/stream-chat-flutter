@@ -75,7 +75,6 @@ class StreamMessageInputThemeData with Diagnosticable {
     this.enableSafeArea,
     this.elevation,
     this.shadow,
-    this.useSystemAttachmentPicker,
   });
 
   /// Duration of the [MessageInput] send button animation
@@ -126,18 +125,6 @@ class StreamMessageInputThemeData with Diagnosticable {
   /// Shadow for the [MessageInput] widget
   final BoxShadow? shadow;
 
-  /// If True, allows you to use the system’s default media picker instead of
-  /// the custom media picker provided by the library. This can be beneficial
-  /// for several reasons:
-  ///
-  /// 1. Consistency: Provides a consistent user experience by using the
-  /// familiar system media picker.
-  /// 2. Permissions: Reduces the need for additional permissions, as the system
-  /// media picker handles permissions internally.
-  /// 3. Simplicity: Simplifies the implementation by leveraging the built-in
-  /// functionality of the system media picker.
-  final bool? useSystemAttachmentPicker;
-
   /// Returns a new [StreamMessageInputThemeData]
   /// replacing some of its properties
   StreamMessageInputThemeData copyWith({
@@ -157,7 +144,6 @@ class StreamMessageInputThemeData with Diagnosticable {
     bool? enableSafeArea,
     double? elevation,
     BoxShadow? shadow,
-    bool? useSystemAttachmentPicker,
   }) {
     return StreamMessageInputThemeData(
       sendAnimationDuration:
@@ -178,8 +164,6 @@ class StreamMessageInputThemeData with Diagnosticable {
       enableSafeArea: enableSafeArea ?? this.enableSafeArea,
       elevation: elevation ?? this.elevation,
       shadow: shadow ?? this.shadow,
-      useSystemAttachmentPicker:
-          useSystemAttachmentPicker ?? this.useSystemAttachmentPicker,
     );
   }
 
@@ -199,8 +183,6 @@ class StreamMessageInputThemeData with Diagnosticable {
       borderRadius: BorderRadius.lerp(a.borderRadius, b.borderRadius, t),
       expandButtonColor:
           Color.lerp(a.expandButtonColor, b.expandButtonColor, t),
-      linkHighlightColor:
-          Color.lerp(a.linkHighlightColor, b.linkHighlightColor, t),
       idleBorderGradient:
           Gradient.lerp(a.idleBorderGradient, b.idleBorderGradient, t),
       inputBackgroundColor:
@@ -214,7 +196,6 @@ class StreamMessageInputThemeData with Diagnosticable {
       enableSafeArea: a.enableSafeArea,
       elevation: lerpDouble(a.elevation, b.elevation, t),
       shadow: BoxShadow.lerp(a.shadow, b.shadow, t),
-      useSystemAttachmentPicker: b.useSystemAttachmentPicker,
     );
   }
 
@@ -240,7 +221,6 @@ class StreamMessageInputThemeData with Diagnosticable {
       enableSafeArea: other.enableSafeArea,
       elevation: other.elevation,
       shadow: other.shadow,
-      useSystemAttachmentPicker: other.useSystemAttachmentPicker,
     );
   }
 
@@ -264,8 +244,7 @@ class StreamMessageInputThemeData with Diagnosticable {
           linkHighlightColor == other.linkHighlightColor &&
           enableSafeArea == other.enableSafeArea &&
           elevation == other.elevation &&
-          shadow == other.shadow &&
-          useSystemAttachmentPicker == other.useSystemAttachmentPicker;
+          shadow == other.shadow;
 
   @override
   int get hashCode =>
@@ -284,8 +263,7 @@ class StreamMessageInputThemeData with Diagnosticable {
       linkHighlightColor.hashCode ^
       elevation.hashCode ^
       shadow.hashCode ^
-      enableSafeArea.hashCode ^
-      useSystemAttachmentPicker.hashCode;
+      enableSafeArea.hashCode;
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -306,8 +284,6 @@ class StreamMessageInputThemeData with Diagnosticable {
       ..add(ColorProperty('linkHighlightColor', linkHighlightColor))
       ..add(DiagnosticsProperty('elevation', elevation))
       ..add(DiagnosticsProperty('shadow', shadow))
-      ..add(DiagnosticsProperty('enableSafeArea', enableSafeArea))
-      ..add(DiagnosticsProperty(
-          'useSystemAttachmentPicker', useSystemAttachmentPicker));
+      ..add(DiagnosticsProperty('enableSafeArea', enableSafeArea));
   }
 }

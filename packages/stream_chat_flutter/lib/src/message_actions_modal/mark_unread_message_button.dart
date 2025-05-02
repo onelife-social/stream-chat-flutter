@@ -25,8 +25,7 @@ class MarkUnreadMessageButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 16),
         child: Row(
           children: [
-            StreamSvgIcon(
-              icon: StreamSvgIcons.messageUnread,
+            StreamSvgIcon.messageUnread(
               color: streamChatThemeData.primaryIconTheme.color,
               size: 24,
             ),

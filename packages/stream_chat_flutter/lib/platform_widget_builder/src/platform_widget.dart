@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/src/platform_widget_base.dart';
-import 'package:stream_chat_flutter/src/misc/empty_widget.dart';
 
 /// A widget that will only be built for the specific Platforms:
 ///
@@ -27,13 +26,13 @@ class PlatformWidget extends PlatformWidgetBase<Widget, Widget, Widget> {
 
   @override
   Widget createDesktopWidget(BuildContext context) =>
-      desktop?.call(context) ?? const Empty();
+      desktop?.call(context) ?? const SizedBox.shrink();
 
   @override
   Widget createMobileWidget(BuildContext context) =>
-      mobile?.call(context) ?? const Empty();
+      mobile?.call(context) ?? const SizedBox.shrink();
 
   @override
   Widget createWebWidget(BuildContext context) =>
-      web?.call(context) ?? const Empty();
+      web?.call(context) ?? const SizedBox.shrink();
 }
